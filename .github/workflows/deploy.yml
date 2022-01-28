@@ -3,7 +3,8 @@ name: Deploy
 on:
   pull_request:
     branches:
-      - [ main, dev ]
+      - main
+      - dev
 
 jobs:
   deploy:
