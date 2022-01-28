@@ -21,3 +21,5 @@ jobs:
           printf '%s\n' '${{secrets.CONFIG_JSON}}' > config.json
 
       - name: Deploy to AWS EC2
+        run: |
+          echo "Not yet implemented"
