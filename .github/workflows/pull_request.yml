@@ -50,7 +50,6 @@ jobs:
   test:
     name: Testing Suite
     runs-on: ubuntu-latest
-    # SET UP ENVIRONMENT IN GITHUB WITH PROPER TEST ENVIRONMENT VARIABLES
     environment: testing
 
     steps:
@@ -60,6 +59,10 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
+
+      - name: Setup environment variable file
+        run: |
+          printf '%s\n' '${{secrets.CONFIG_JSON}}' > config.json
 
       - name: Run tests
         run: |
