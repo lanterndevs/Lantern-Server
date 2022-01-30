@@ -1,32 +1,37 @@
-const {MongoClient} = require("mongodb");
+require("dotenv").config();
+const mongoDBConnection = require('./mongoDBConnection');
 const Express = require("express");
 const BodyParser = require("body-parser");
-
 const port = 3000
 
-// Pull cluster uri from config.json and init client
-const config = require("./config.json");
-const client = new MongoClient(config.dbURI, { useNewUrlParser: true, useUnifiedTopology:true });
+var usersRouter = require('./users/router');
 
 const server = Express();
 server.use(BodyParser.json());
 server.use(BodyParser.urlencoded({extended:true}));
 
-let userCollection;
-
 
 server.get("/", (req, res) => {
-    res.send("Hello World");
+    res.status(200);
+    res.send({message:"Hello World"});
 });
 
-server.listen(port, async () => {
-    try {
-        // Connect to the cluster
-        await client.connect();
-        userCollection = client.db("Lantern").collection("LanternUsers");
-        console.log("Connected to MongoDB Lantern database");
-        console.log("Server listening on port " + port);
-    } catch (e) {
-        console.log(e);
-    }
-});
+server.use('/api/',usersRouter)
+
+// Bypass connections if running tests
+if (process.env.NODE_ENV != "test") {
+    mongoDBConnection.connect(()=>{
+        server.listen(port, async () => {
+            try {
+                console.log("Connected to MongoDB Lantern database");
+                console.log("Server listening on port " + port);
+            } catch (e) {
+                console.log(e);
+            }
+        });
+    });
+}
+
+
+
+module.exports = server;
