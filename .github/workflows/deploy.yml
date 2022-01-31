@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  deploy:
+    name: AWS EC2 Deployment
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup environment variable file
+        run: |
+          printf '%s\n' '${{secrets.CONFIG_JSON}}' > config.json
+
+      - name: Deploy to AWS EC2
+        run: |
+          echo "Not yet implemented"
