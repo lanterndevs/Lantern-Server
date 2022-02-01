@@ -1,16 +1,13 @@
 name: Deploy
 
 on:
-  pull_request:
-    branches:
-      - main
-      - dev
+  workflow_dispatch
 
 jobs:
   deploy:
     name: AWS EC2 Deployment
     runs-on: ubuntu-latest
-    environment: production
+    environment: testing
 
     steps:
       - name: Checkout
@@ -18,8 +15,20 @@ jobs:
 
       - name: Setup environment variable file
         run: |
-          printf '%s\n' '${{secrets.CONFIG_JSON}}' > config.json
+          printf '%s\n' '${{secrets.DOT_ENV}}' > .env
 
-      - name: Deploy to AWS EC2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create CodeDeploy Deployment
+        id: deploy
         run: |
-          echo "Not yet implemented"
+          aws deploy create-deployment \
+            --application-name Lantern_EC2 \
+            --deployment-group-name development_group \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}

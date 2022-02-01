@@ -5,14 +5,15 @@ on:
     branches:
       - main
       - dev
-  schedule:
-    - cron: '0 6 * * *'
 
 jobs:
   lint:
     name: ESLint
     runs-on: ubuntu-latest
     steps:
+      - name: Install eslint
+        run: npm install eslint
+
       - name: Run ESLint
         run: eslint . --ext .js,.jsx,.ts,.tsx
 
@@ -63,7 +64,7 @@ jobs:
 
       - name: Setup environment variable file
         run: |
-          printf '%s\n' '${{secrets.CONFIG_JSON}}' > config.json
+          printf '%s\n' '${{secrets.DOT_ENV}}' > .env
 
       - name: Run tests
         run: |
