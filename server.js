@@ -13,7 +13,7 @@ server.use(BodyParser.urlencoded({extended:true}));
 
 server.get("/", (req, res) => {
     res.status(200);
-    res.send({message:"Hello World"});
+    res.send({message:"Hello World!"});
 });
 
 server.use('/api/',usersRouter)
