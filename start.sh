@@ -1,2 +1,2 @@
 cd /home/ubuntu/lantern-server
-npm start
+pm2 start server.js
