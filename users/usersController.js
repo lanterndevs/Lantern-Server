@@ -1,7 +1,7 @@
 const mongoDBConnection = require('../mongoDBConnection');
 
 /*
-POST \register
+POST /register
 
 ReqBody:
 {
