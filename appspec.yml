@@ -1,0 +1,24 @@
+# This is an appspec.yml template file for use with an EC2/On-Premises deployment in CodeDeploy.
+# For help completing this file, see the "AppSpec File Reference" in the
+#   "CodeDeploy User Guide" at
+#   https://docs.aws.amazon.com/codedeploy/latest/userguide/app-spec-ref.html
+version: 0.0
+os: linux
+
+files:
+  - source: .
+    destination: /home/ubuntu/lantern-server/
+
+hooks:
+  # During the AfterInstall deployment lifecycle event, run the commands
+  #   in the script specified in "location".
+  AfterInstall:
+    - location: setup.sh
+      timeout: 300
+      runas: root
+  # During the ApplicationStart deployment lifecycle event, run the commands
+  #   in the script specified in "location".
+  ApplicationStart:
+    - location: start.sh
+      timeout: 300
+      runas: root
