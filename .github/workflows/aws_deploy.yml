@@ -1,11 +1,11 @@
-name: Deploy
+name: Manual AWS Deploy
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: AWS EC2 Deployment
+    name: Deploy to AWS
     runs-on: ubuntu-latest
     environment: testing
 
