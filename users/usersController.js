@@ -23,7 +23,7 @@ Response:
 module.exports.register = (req, res) => {
   // Validate unique email
   mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.body.auth.email }).toArray((e, docs) => {
-    if (docs.length != 0) {
+    if (docs.length !== 0) {
       return res.status(400).json({ message: 'Email already in use' });
     } else {
       // Insert document

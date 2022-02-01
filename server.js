@@ -18,7 +18,7 @@ server.get('/', (req, res) => {
 server.use('/api/', usersRouter);
 
 // Bypass connections if running tests
-if (process.env.NODE_ENV != 'test') {
+if (process.env.NODE_ENV !== 'test') {
   mongoDBConnection.connect(() => {
     server.listen(port, async () => {
       try {
