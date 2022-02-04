@@ -1,0 +1,500 @@
+---
+openapi: 3.0.2
+info:
+  title: Lantern API
+  version: 1.0.0
+  description: Backend API for Lantern open source accounting software
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Lantern Team
+    email: lanterndevelopers@gmail.com
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+paths:
+  /api/accounts:
+    summary: Path used to request accounts
+    description: ""
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+          description: Successful response - returns an array of `Account` entities.
+      security:
+      - clientToken: []
+      operationId: getAccounts
+      summary: List all accounts for specified user
+      description: Gets a list of all `Account` entities for user owning provided
+        token
+    post:
+      requestBody:
+        description: A new `Account` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+        required: true
+      responses:
+        "201":
+          description: Successful response.
+      security:
+      - clientToken: []
+      operationId: createAccount
+      summary: Create a Account
+      description: Creates a new instance of a `Account`.
+  /api/accounts/{accountId}:
+    summary: Path used to manage a single Account.
+    description: "The REST endpoint/path used to get, update, and delete single instances\
+      \ of an `Account`.  This path contains `GET`, `PUT`, and `DELETE` operations\
+      \ used to perform the get, update, and delete tasks, respectively."
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+          description: Successful response - returns a single `Account`.
+      security:
+      - clientToken: []
+      operationId: getAccount
+      summary: Get a Account
+      description: Gets the details of a single instance of a `Account`.
+    put:
+      requestBody:
+        description: Updated `Account` information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+        required: true
+      responses:
+        "202":
+          description: Successful response.
+      security:
+      - clientToken: []
+      operationId: updateAccount
+      summary: Update a Account
+      description: Updates an existing `Account`.
+    delete:
+      responses:
+        "204":
+          description: Successful response.
+      security:
+      - clientToken: []
+      operationId: deleteAccount
+      summary: Delete a Account
+      description: Deletes an existing `Account`.
+    parameters:
+    - name: accountId
+      description: A unique identifier for a `Account`.
+      schema:
+        type: string
+      in: path
+      required: true
+  /api/link:
+    summary: For Plaid Link functionality
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaidLinkToken'
+          description: Successfully created link token
+      security:
+      - clientToken: []
+      operationId: createLinkToken
+      summary: Get link_token
+      description: "The first step of linking a bank account.  Server will request\
+        \ a link_token from Plaid /link/token/create endpoint, and return the temporary\
+        \ token to the client."
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaidPublicToken'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaidItem'
+          description: Exchange successful
+      security:
+      - clientToken: []
+      operationId: exchangePublicForItem
+      summary: Exchange public token for Item
+      description: "Calls /item/public_token/exchange.  This returns an access token\
+        \ and item ID.  Complete the rest of the fields in an Item, store it in the\
+        \ database, then return a complete item."
+  /api/transactions:
+    summary: Path used to request transactions
+    description: ""
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+          description: Successful response - returns an array of `Transaction` entities.
+      security:
+      - clientToken: []
+      operationId: getTransactions
+      summary: List all transactions for specified user
+      description: Gets a list of all `Transaction` entities for user owning provided
+        token
+    post:
+      requestBody:
+        description: A new `Transaction` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        "201":
+          description: Successful response.
+      security:
+      - clientToken: []
+      operationId: createTransaction
+      summary: Create a Transaction
+      description: Creates a new instance of a `Transaction`.
+  /api/transactions/{transactionId}:
+    summary: Path used to manage a single Transaction.
+    description: "The REST endpoint/path used to get, update, and delete single instances\
+      \ of an `Transaction`.  This path contains `GET`, `PUT`, and `DELETE` operations\
+      \ used to perform the get, update, and delete tasks, respectively."
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: Successful response - returns a single `Transaction`.
+      security:
+      - clientToken: []
+      operationId: getTransaction
+      summary: Get a Transaction
+      description: Gets the details of a single instance of a `Transaction`.
+    put:
+      requestBody:
+        description: Updated `Transaction` information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        "202":
+          description: Successful response.
+      security:
+      - clientToken: []
+      operationId: updateTransaction
+      summary: Update a Transaction
+      description: Updates an existing `Transaction`.
+    delete:
+      responses:
+        "204":
+          description: Successful response.
+      security:
+      - clientToken: []
+      operationId: deleteTransaction
+      summary: Delete a Transaction
+      description: Deletes an existing `Transaction`.
+    parameters:
+    - name: transactionId
+      description: A unique identifier for a `Transaction`.
+      schema:
+        type: string
+      in: path
+      required: true
+  /api/users/authenticate:
+    summary: To authenticate (login) User client
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuthenticationInfo'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientAuthToken'
+          description: "Successful login, client token"
+        "401":
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                invalid:
+                  value: Invalid email or password!
+          description: User authentication info is invalid
+      operationId: authenticateClient
+      summary: Request token to authenticate client
+  /api/users/register:
+    summary: For registration of new users (organizations)
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationInfo'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientAuthToken'
+          description: User account created
+      security:
+      - clientToken: []
+      operationId: registerUser
+      summary: Register a new user and initialize their account
+  /:
+    summary: Generic test endpoint
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Get ok
+components:
+  schemas:
+    User:
+      description: User/Owner of organization
+      required:
+      - id
+      - registration
+      type: object
+      properties:
+        id:
+          description: Unique ID of User
+          type: integer
+        registration:
+          $ref: '#/components/schemas/UserRegistrationInfo'
+          description: User registration info
+    Error:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: integer
+        message:
+          description: Error message
+          type: string
+    Transaction:
+      description: A financial transaction
+      required:
+      - name
+      - source
+      - destination
+      - date
+      - amount
+      type: object
+      properties:
+        name:
+          description: Descriptive name for the transaction
+          type: string
+        details:
+          description: Additional description for the transaction
+          type: string
+        source:
+          $ref: '#/components/schemas/Account'
+          description: Source account of the transaction
+        destination:
+          $ref: '#/components/schemas/Account'
+          description: Destination account of the transaction
+        date:
+          format: date
+          description: Date transaction occurred
+          type: string
+        amount:
+          description: Monetary amount ($USD) moved from source account to destination
+            account as a result of this transaction
+          type: number
+    Institution:
+      description: Represents a financial institution
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          description: Plaid-provided institution id
+          type: string
+        name:
+          description: Name of financial institution
+          type: string
+    UserRegistrationInfo:
+      description: Information required for User registration
+      required:
+      - auth
+      - bio
+      type: object
+      properties:
+        auth:
+          $ref: '#/components/schemas/UserAuthenticationInfo'
+          description: User authentication information
+        bio:
+          $ref: '#/components/schemas/UserBio'
+          description: User biographic information
+    UserAuthenticationInfo:
+      description: Information used to authenticate users (login and signup)
+      required:
+      - email
+      - password
+      type: object
+      properties:
+        email:
+          description: Email address of user
+          pattern: "^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"\
+            ]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\\
+            -0-9]+\\.)+[a-zA-Z]{2,}))$"
+          type: string
+        password:
+          description: Password of user
+          type: string
+    UserBio:
+      description: Biographic information about User
+      required:
+      - first
+      - last
+      - orgName
+      type: object
+      properties:
+        first:
+          description: First name of User
+          type: string
+        last:
+          description: Last name of User
+          type: string
+        orgName:
+          description: Name of User's organization
+          type: string
+    InstitutionID:
+      description: Unique ID for a financial institution (provided by Plaid)
+      pattern: "^ins_[0-9]+$"
+      type: string
+    Account:
+      description: Financial account
+      required:
+      - name
+      - institutionID
+      - id
+      - balance
+      type: object
+      properties:
+        name:
+          description: Name of account
+          type: string
+        description:
+          description: Description of account
+          type: string
+        institutionID:
+          description: Plaid-provided institution ID account is associated with
+          type: string
+        id:
+          description: Unique Account ID (provided by Plaid)
+          type: string
+        balance:
+          description: Current account balance
+          type: number
+    ClientAuthToken:
+      oneOf:
+      - type: object
+      - $ref: '#/components/schemas/Token'
+      description: Token (or key) used by frontended to authenticate and authorize
+        itself with the backend
+      type: object
+    Token:
+      description: Generic token type
+      required:
+      - token
+      type: object
+      properties:
+        token:
+          description: Token
+          type: string
+    PlaidAccessToken:
+      oneOf:
+      - type: object
+      - $ref: '#/components/schemas/Token'
+      description: Plaid Access Token for a given Item
+      type: object
+    PlaidLinkToken:
+      oneOf:
+      - type: object
+      - $ref: '#/components/schemas/Token'
+      description: Temporary link_token from Plaid
+      type: object
+    PlaidPublicToken:
+      oneOf:
+      - type: object
+      - $ref: '#/components/schemas/Token'
+      description: "During Link process, Plaid public token is exchanged for a permanent\
+        \ access token"
+      type: object
+    PlaidItem:
+      required:
+      - userID
+      - id
+      - institution
+      - webhook
+      - token
+      type: object
+      properties:
+        userID:
+          description: ID of user Item belongs to
+          type: integer
+        id:
+          description: Unique Item ID (Assigned by Plaid)
+          type: string
+        institution:
+          description: Unique ID representing a financial institution (provided by
+            Plaid)
+          type: string
+        webhook:
+          description: URL registered to receive webhooks for the item (Provided by
+            Plaid)
+          type: string
+        token:
+          $ref: '#/components/schemas/PlaidAccessToken'
+          description: Plaid access token for Item
+    Message:
+      description: Generic message
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          description: Generic message string
+          type: string
+  securitySchemes:
+    clientToken:
+      type: apiKey
+      description: Client provides a token to the backend in order to authenticate
+        and authorize itself
+      name: Authorization
+      in: header

@@ -3,7 +3,7 @@ const {generateAccessToken, authenticateToken} = require('../helpers/jwt');
 const {ObjectId} = require('mongodb');
 
 /*
-POST \register
+POST /register
 
 ReqBody: 
 {
