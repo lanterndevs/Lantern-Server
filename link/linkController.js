@@ -24,7 +24,7 @@ module.exports.create = async (req, res) => {
     try {
         const response = await plaid.client.linkTokenCreate(request);
         const linkToken = response.data.link_token;
-        res.status(200).json(linkToken);
+        res.status(200).json({token: linkToken});
     } catch (error) {
         // handle error
         console.log(error);
