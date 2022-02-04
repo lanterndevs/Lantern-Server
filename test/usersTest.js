@@ -1,42 +1,68 @@
-const { chai, server, assert, should } = require('./testConfig');
+const { chai, server, assert, should } = require("./testConfig");
 const mongoDBConnection = require('../mongoDBConnection');
-const { ObjectId } = require('mongodb');
+const {ObjectId} = require('mongodb');
 
 // Hello World Test
 describe('/GET /', () => {
-  it('It should output "Hello World"', (done) => {
-    chai.request(server).get('/').end((err, res) => {
-      res.should.have.status(200);
-      res.body.message.should.equal('Hello World');
-      done();
+    it("It should output \"Hello World\"", (done) =>{
+        chai.request(server).get("/").end((err,res)=> {    
+            res.should.have.status(200);
+            res.body.message.should.equal("Hello World");
+            done();
+        });
     });
-  });
 });
 
+
 // User register test
-registerTestPayload = { auth: { email: 'string', password: 'string' }, bio: { first: 'string', last: 'string', orgName: 'string' } };
-
 describe('/POST /api/users/register', () => {
-  // Validates inserting a user document into database
-  it('It should register a user', (done) => {
-    chai.request(server).post('/api/users/register').send(registerTestPayload).end((err, res) => {
-      mongoDBConnection.get().collection('LanternUsers').find({ _id: ObjectId(res.body._id) }).toArray((e, docs) => {
-        docs.should.have.lengthOf(1);
-        docs[0].should.have.property('_id');
-        (docs[0]._id.toString()).should.equal(res.body._id);
-      });
-      res.should.have.status(201);
-      res.body.message.should.equal('Welcome ' + registerTestPayload.bio.first);
-      done();
+    registerTestPayload={"auth": {"email": "test@gmail.com","password": "pass"},"bio": {"first": "Johnny","last": "Appleseed","orgName": "Lantern"}};
+    // Validates inserting a user document into database
+    it("It should register a user", (done) =>{
+        chai.request(server).post("/api/users/register").send(registerTestPayload).end((err,res)=> {
+            mongoDBConnection.get().collection('LanternUsers').find({_id:ObjectId(res.body._id)}).toArray((e, docs) => {
+                docs.should.have.lengthOf(1);
+                docs[0].should.have.property("_id");
+                (docs[0]._id.toString()).should.equal(res.body._id);
+              }); 
+            res.should.have.status(201);
+            done();
+        });
     });
-  });
 
-  // Validates duplicate email condition
-  it('Emails should be unique per account', (done) => {
-    chai.request(server).post('/api/users/register').send(registerTestPayload).end((err, res) => {
-      res.should.have.status(400);
-      res.body.message.should.equal('Email already in use');
-      done();
+    // Validates duplicate email condition
+    it("Emails should be unique per account", (done) =>{
+        chai.request(server).post("/api/users/register").send(registerTestPayload).end((err,res)=> {
+            res.should.have.status(400);
+            res.body.message.should.equal("Email already in use");
+            done();
+        });
     });
-  });
+});
+
+describe('/POST /api/users/update', () => {
+    // Validates inserting a user document into database
+    registerTestPayload2={"auth": {"email": "test2@gmail.com","password": "pass"},"bio": {"first": "Johnny","last": "Appleseed","orgName": "Lantern"}};
+    updateTestPayload={"bio": {"first": "John","last": "Appleseed","orgName": "Lantern"}};
+    it("It should update document in database", (done) =>{
+        chai.request(server).post("/api/users/register").send(registerTestPayload2).end((err,res)=> {
+            chai.request(server).post("/api/users/update").set('authentication', 'bearer '+res.body.token).send(updateTestPayload).end((err,res2)=> {
+                mongoDBConnection.get().collection('LanternUsers').find({_id:ObjectId(res.body._id)}).toArray((e, docs) => {
+                    docs.should.have.lengthOf(1);
+                    docs[0].bio.first.should.equal("John");
+                }); 
+                res2.body.message.should.equal("Database Updated");
+                res2.should.have.status(200);
+                done();
+            });
+        });
+    });
+
+    // Validates duplicate email condition
+    it("Should accept valid token", (done) =>{
+        chai.request(server).post("/api/users/update").set('authentication', 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpcVCJ9.eyclbWFpbCI6InNoaWJpYmFsYTErNEBnbWFpbC5jb20iLCJpYXQiOjE2NDM5NjEzMTUsImV4cCI6MaY0Mzk2MaaxNX0.TS32f3XYP5AfjjTIQgwv-H_7o5bDbski9EG-DfOGqjI').send(updateTestPayload).end((err,res)=> {
+            res.should.have.status(403);
+            done();
+        });
+    });
 });
