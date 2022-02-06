@@ -24,7 +24,7 @@ jobs:
         run: |
           git config --global user.name 'Lantern Developers'
           git config --global user.email 'lanterndevelopers@gmail.com'
-          git diff --quiet && git diff --staged --quiet || git commit -am "ESLint automated fixes"
+          (git diff --quiet && git diff --staged --quiet) || git commit -am "ESLint automated fixes"
           git push
 
   scan:
