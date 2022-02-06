@@ -12,17 +12,17 @@ const server = Express();
 server.use(BodyParser.json());
 server.use(BodyParser.urlencoded({ extended: true }));
 server.use(
-    OpenApiValidator.middleware({
-      apiSpec: './lantern.yaml',
-      validateRequests: true, // (default)
-      validateResponses: true, // false by default
-    }),
+  OpenApiValidator.middleware({
+    apiSpec: './lantern.yaml',
+    validateRequests: true, // (default)
+    validateResponses: true // false by default
+  })
 );
 server.use((err, req, res, next) => {
   // format error
   res.status(err.status || 500).json({
     message: err.message,
-    errors: err.errors,
+    errors: err.errors
   });
 });
 
