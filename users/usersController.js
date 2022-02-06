@@ -1,6 +1,7 @@
 const mongoDBConnection = require('../mongoDBConnection');
 const { generateAccessToken, authenticateToken } = require('../helpers/jwt');
 const { ObjectId } = require('mongodb');
+const { check, validationResult } = require("express-validator");
 
 /*
 POST /register
@@ -21,28 +22,45 @@ ReqBody:
 Response:
 {_id, token}
 */
-module.exports.register = (req, res, next) => {
+module.exports.register = [
+  // Perform input validation
+  check("bio.first").isLength({ min: 1 }).trim().withMessage("First name must be specified.")
+		.isAlphanumeric().withMessage("First name has non-alphanumeric characters."),
+  check("bio.last").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
+		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
+  check("bio.orgName").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
+		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
+	check("auth.email").isLength({ min: 1 }).trim().withMessage("Email must be specified.")
+		.isEmail().withMessage("Email must be a valid email address."),
+  check("auth.password").isLength({ min: 6 }).trim().withMessage("Password must be 6 characters or greater."),
+  (req, res, next) => {
   // Validate unique email
-  mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.body.auth.email }).toArray((e, docs) => {
-    if (docs.length !== 0) {
-      return res.status(400).json({ message: 'Email already in use' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // Display sanitized values/errors messages.
+      return res.status(400).json({message:errors.array()[0].msg});
     } else {
-      // Insert document
-      mongoDBConnection.get().collection('LanternUsers').insertOne(req.body, (e, dbRes) => {
-        if (e) {
-          return res.status(500).json({ message: 'Database Insertion Error' });
+      mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.body.auth.email }).toArray((e, docs) => {
+        if (docs.length !== 0) {
+          return res.status(400).json({ message: 'Email already in use' });
         } else {
-          const jwtToken = generateAccessToken({ email: req.body.auth.email });
-          return res.status(201).json({
-            _id: dbRes.insertedId.toString(),
-            token: jwtToken
+          // Insert document
+          mongoDBConnection.get().collection('LanternUsers').insertOne(req.body, (e, dbRes) => {
+            if (e) {
+              return res.status(500).json({ message: 'Database Insertion Error' });
+            } else {
+              const jwtToken = generateAccessToken({ email: req.body.auth.email });
+              return res.status(201).json({
+                _id: dbRes.insertedId.toString(),
+                token: jwtToken
+              });
+            }
           });
         }
       });
     }
-  });
-};
-
+  }
+];
 /*
 POST \update
 
@@ -56,7 +74,14 @@ ReqBody:
 Response:
 {message: "string"}
 */
-module.exports.updateUserProfile = (req, res) => {
+module.exports.updateUserProfile = [
+  check("bio.first").isLength({ min: 1 }).trim().withMessage("First name must be specified.")
+		.isAlphanumeric().withMessage("First name has non-alphanumeric characters."),
+  check("bio.last").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
+		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
+  check("bio.orgName").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
+		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
+  (req, res) => {
   mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.user.email }).toArray((e, docs) => {
     if (docs.length == 0) {
       return res.status(400).json({ message: 'Account invalid' });
@@ -77,4 +102,4 @@ module.exports.updateUserProfile = (req, res) => {
       });
     }
   });
-};
+}];
