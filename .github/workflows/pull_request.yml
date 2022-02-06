@@ -17,10 +17,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run ESLint
-        run: npx eslint . --ext .js,.jsx,.ts,.tsx --fix
+      - name: Run ESLint and commit ESLint fixes if present
+        run: |
+          npx eslint . --ext .js,.jsx,.ts,.tsx --fix
 
       - name: Commit ESLint fixes
+        if: always()
         run: |
           git config --global user.name 'Lantern Developers'
           git config --global user.email 'lanterndevelopers@gmail.com'
