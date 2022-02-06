@@ -33,7 +33,10 @@ module.exports.register = (req, res, next) => {
           return res.status(500).json({message:"Database Insertion Error"});
         } else {
           const jwtToken = generateAccessToken({email:req.body.auth.email});
-          return res.status(201).json({token: jwtToken});
+          return res.status(201).json({
+            _id: dbRes.insertedId.toString(),
+            token: jwtToken
+          });
         }
       });
     }

@@ -261,7 +261,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/UserRegistrationRecord'
           description: User account created
         "400":
           content:
@@ -517,6 +517,19 @@ components:
       properties:
         message:
           description: Generic message string
+          type: string
+    UserRegistrationRecord:
+      description: Data about a user registration event.  Returned by register endpoint.
+      required:
+      - token
+      - _id
+      type: object
+      properties:
+        token:
+          description: Token granted to user
+          type: string
+        _id:
+          description: Object insertion ID from MongoDB
           type: string
   securitySchemes:
     clientToken:
