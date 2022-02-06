@@ -3,7 +3,7 @@ const {generateAccessToken, authenticateToken} = require('../helpers/jwt');
 const {ObjectId} = require('mongodb');
 
 /*
-POST \register
+POST /register
 
 ReqBody: 
 {
@@ -23,9 +23,9 @@ Response:
 */
 module.exports.register = (req, res, next) => {
   // Validate unique email
-  mongoDBConnection.get().collection('LanternUsers').find({"auth.email":req.body.auth.email}).toArray((e,docs) => {
-    if (docs.length != 0) {
-      return res.status(400).json({message:"Email already in use"});
+  mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.body.auth.email }).toArray((e, docs) => {
+    if (docs.length !== 0) {
+      return res.status(400).json({ message: 'Email already in use' });
     } else {
       // Insert document
       mongoDBConnection.get().collection('LanternUsers').insertOne(req.body, (e, dbRes) => {
@@ -33,7 +33,10 @@ module.exports.register = (req, res, next) => {
           return res.status(500).json({message:"Database Insertion Error"});
         } else {
           const jwtToken = generateAccessToken({email:req.body.auth.email});
-          return res.status(201).json({_id: dbRes.insertedId, token: jwtToken});
+          return res.status(201).json({
+            _id: dbRes.insertedId.toString(),
+            token: jwtToken
+          });
         }
       });
     }
@@ -46,11 +49,9 @@ POST \update
 
 ReqBody: 
 {
-  "bio": {
-    "first": "string",
-    "last": "string",
-    "orgName": "string"
-  }
+  "first": "string",
+  "last": "string",
+  "orgName": "string"
 }
 
 Response:
@@ -62,10 +63,10 @@ module.exports.updateUserProfile = (req, res) => {
       return res.status(400).json({message:"Account invalid"});
     } else {
       // Update document
-      const modifiedBio = {
-        "bio.first": req.body.bio.first,
-        "bio.last": req.body.bio.last,
-        "bio.orgName": req.body.bio.orgName
+      let modifiedBio = {
+        "bio.first": req.body.first,
+        "bio.last": req.body.last,
+        "bio.orgName": req.body.orgName
       }
 
       mongoDBConnection.get().collection('LanternUsers').updateOne({_id: docs[0]._id}, {$set:modifiedBio}, (e, dbRes) => {

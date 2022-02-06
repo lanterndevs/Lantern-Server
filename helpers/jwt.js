@@ -6,7 +6,7 @@ function generateAccessToken(username) {
   
 // authentication header: "bearer <token>"
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authentication'];
+    const authHeader = req.get('Authorization');
     const token = authHeader.split(' ')[1];
 
     if (token == null) return res.sendStatus(401);
