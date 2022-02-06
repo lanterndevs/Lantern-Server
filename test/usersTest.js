@@ -39,6 +39,33 @@ describe('/POST /api/users/register', () => {
   });
 });
 
+// User login test
+describe('/POST /api/users/register', () => {
+  const registerTestPayload = { auth: { email: 'test@gmail.com', password: 'pass' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
+  // Validates inserting a user document into database
+  it('It should register a user', (done) => {
+    chai.request(server).post('/api/users/register').send(registerTestPayload).end((err, res) => {
+      mongoDBConnection.get().collection('LanternUsers').find({ _id: ObjectId(res.body._id) }).toArray((e, docs) => {
+        docs.should.have.lengthOf(1);
+        docs[0].should.have.property('_id');
+        (docs[0]._id.toString()).should.equal(res.body._id);
+      });
+      res.should.have.status(201);
+      done();
+    });
+  });
+
+  // Validates duplicate email condition
+  it('Emails should be unique per account', (done) => {
+    chai.request(server).post('/api/users/register').send(registerTestPayload).end((err, res) => {
+      res.should.have.status(400);
+      res.body.message.should.equal('Email already in use');
+      done();
+    });
+  });
+});
+
+// User update test
 describe('/POST /api/users/update', () => {
   // Validates inserting a user document into database
   const registerTestPayload2 = { auth: { email: 'test2@gmail.com', password: 'pass' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
