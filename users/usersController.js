@@ -60,14 +60,16 @@ Response:
 */
 module.exports.authenticate = (req, res, next) => {
   // Validate login information
-  mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.body.auth.email }).toArray(async (e, docs) => {
+  let email = req.body.email;
+  let password = req.body.password;
+  mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': email }).toArray(async (e, docs) => {
     if (docs.length === 0) {
       return res.status(400).json({message: 'Could not find user with provided email!'});
     } else {
       // Validate password
-      if (await isValidPass(docs[0].auth.password, req.body.auth.password)) {
+      if (await isValidPass(docs[0].auth.password, password)) {
         // Create new token and return it
-        const jwtToken = generateAccessToken({email: req.body.auth.email});
+        const jwtToken = generateAccessToken({email: email});
         return res.status(201).json({
           _id: docs[0]._id.toString(),
           token: jwtToken
