@@ -15,15 +15,15 @@ describe('Check password hashing/verification', () => {
         });
     });
     it('It should verify a correct password', (done) => {
-        isValidPass(hashedPassword.hash, origPassword).then((result) => {
+        isValidPass(hashedPassword, origPassword).then((result) => {
             let passCorrect = result;
             passCorrect.should.equal(true);
             done();
         });
 
     });
-    it('It should NOT verify an incorrect password', async (done) => {
-        isValidPass(hashedPassword.hash, "incorrectPassword").then((result) => {
+    it('It should NOT verify an incorrect password', (done) => {
+        isValidPass(hashedPassword, "incorrectPassword").then((result) => {
             let passCorrect = result;
             passCorrect.should.equal(false);
             done();
