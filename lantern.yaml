@@ -119,7 +119,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PlaidPublicToken'
+              $ref: '#/components/schemas/Token'
         required: true
       responses:
         "200":
