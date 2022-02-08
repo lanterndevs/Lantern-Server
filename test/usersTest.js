@@ -46,7 +46,7 @@ describe('/POST /api/users/authenticate', () => {
   it('It should log in a user (grant JWT)', (done) => {
     chai.request(server).post('/api/users/authenticate').send(loginPayload).end((err, res) => {
       res.should.have.status(200);
-      res.body.should.have.key("token");
+      res.body.should.have.property("token");
       done();
     });
   });
@@ -56,7 +56,7 @@ describe('/POST /api/users/authenticate', () => {
   it('It should give an invalid password error', (done) => {
     chai.request(server).post('/api/users/authenticate').send(incorrectPasswordPayload).end((err, res) => {
       res.should.have.status(401);
-      res.body.should.have.key("message");
+      res.body.should.have.property("message");
       done();
     });
   });
@@ -66,7 +66,7 @@ describe('/POST /api/users/authenticate', () => {
   it('It should give an invalid password error', (done) => {
     chai.request(server).post('/api/users/authenticate').send(incorrectLoginPayload).end((err, res) => {
       res.should.have.status(401);
-      res.body.should.have.key("message");
+      res.body.should.have.property("message");
       done();
     });
   });

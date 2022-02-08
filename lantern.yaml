@@ -234,13 +234,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientAuthToken'
+                $ref: '#/components/schemas/UserRegistrationRecord'
           description: "Successful login, client token"
         "401":
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/Message'
               examples:
                 invalid:
                   value: Invalid email or password!
@@ -530,6 +530,19 @@ components:
           type: string
         _id:
           description: Object insertion ID from MongoDB
+          type: string
+    UserPassHash:
+      description: "Hash of user password, and some information about it"
+      required:
+      - salt
+      - hash
+      type: object
+      properties:
+        salt:
+          description: Salt used when hashing original password
+          type: string
+        hash:
+          description: Hashed password
           type: string
   securitySchemes:
     clientToken:

@@ -8,12 +8,12 @@ describe('/GET /api/link/create', () => {
         const loginPayload = {email: 'test@gmail.com', password: 'pass'};
         chai.request(server).post('/api/users/authenticate').send(loginPayload).end((err, res) => {
             res.should.have.status(200);
-            res.body.should.have.key("token");
+            res.body.should.have.property("token");
             let token = res.body.token;
             // Now hit create endpoint using token
             chai.request(server).get('/api/link').set('Authorization', 'Bearer ' + token).end((err2, res2) => {
                 res.should.have.status(200);
-                res.body.should.have.key("token");
+                res.body.should.have.property("token");
                 done();
             });
         });

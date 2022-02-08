@@ -64,18 +64,18 @@ module.exports.authenticate = (req, res, next) => {
   let password = req.body.password;
   mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': email }).toArray(async (e, docs) => {
     if (docs.length === 0) {
-      return res.status(400).json({message: 'Could not find user with provided email!'});
+      return res.status(401).json({message: 'Could not find user with provided email!'});
     } else {
       // Validate password
       if (await isValidPass(docs[0].auth.password, password)) {
         // Create new token and return it
         const jwtToken = generateAccessToken({email: email});
-        return res.status(201).json({
+        return res.status(200).json({
           _id: docs[0]._id.toString(),
           token: jwtToken
         });
       } else {
-        return res.status(403).json({message: 'Invalid email/password combination!'});
+        return res.status(401).json({message: 'Invalid email/password combination!'});
       }
     }
   });
