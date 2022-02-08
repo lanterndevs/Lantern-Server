@@ -1,4 +1,5 @@
 const plaid = require('../plaidConnection');
+const mongoDBConnection = require("../mongoDBConnection");
 
 /*
 GET /create
@@ -31,18 +32,25 @@ module.exports.create = async (req, res) => {
 
 module.exports.exchange = async (req, res) => {
   // Exchange public token for access token
-  const publicToken = req.body.token;
-  const request = {
-    public_token: publicToken
+  const exchangeRequest = {
+    public_token: req.body.token
   };
   try {
-    const response = await plaid.client.itemPublicTokenExchange(request);
+    const response = await plaid.client.itemPublicTokenExchange(exchangeRequest);
     const accessToken = response.data.access_token;
-    // const itemId = response.data.item_id;
-    // TODO Store item in database?
-    res.status(200).json({ token: accessToken });
+    //const itemId = response.data.item_id;
+    // Store full item in database
+    let item = await plaid.getItem(accessToken);
+    mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $push: {items: item} }, (e, dbRes) => {
+      if (e) {
+        res.status(500).json({ message: 'Database insert Item Error!' });
+      } else {
+        res.status(200).json({ token: accessToken });
+      }
+    });
   } catch (error) {
     // handle error
     console.log(error);
+    res.status(500).json({ message: error });
   }
 };
