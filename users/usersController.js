@@ -111,11 +111,11 @@ Response:
 {message: "string"}
 */
 module.exports.updateUserProfile = [
-  check("bio.first").isLength({ min: 1 }).trim().withMessage("First name must be specified.")
+  check("req.first").isLength({ min: 1 }).trim().withMessage("First name must be specified.")
 		.isAlphanumeric().withMessage("First name has non-alphanumeric characters."),
-  check("bio.last").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
+  check("last").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
 		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
-  check("bio.orgName").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
+  check("orgName").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
 		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
   (req, res) => {
   mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.user.email }).toArray((e, docs) => {
