@@ -15,7 +15,7 @@ describe('/GET /', () => {
 
 // User register test
 describe('/POST /api/users/register', () => {
-  const registerTestPayload = { auth: { email: 'test@gmail.com', password: 'pass' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
+  const registerTestPayload = { auth: { email: 'test@gmail.com', password: 'password' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
   // Validates inserting a user document into database
   it('It should register a user', (done) => {
     chai.request(server).post('/api/users/register').send(registerTestPayload).end((err, res) => {
@@ -25,6 +25,14 @@ describe('/POST /api/users/register', () => {
         (docs[0]._id.toString()).should.equal(res.body._id);
       });
       res.should.have.status(201);
+      done();
+    });
+  });
+
+  const registerBadPassTestPayload = { auth: { email: 'test@gmail.com', password: 'pass' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
+  it('It should detect invalid password', (done) => {
+    chai.request(server).post('/api/users/register').send(registerBadPassTestPayload).end((err, res) => {
+      res.should.have.status(400);
       done();
     });
   });
@@ -41,7 +49,7 @@ describe('/POST /api/users/register', () => {
 
 describe('/POST /api/users/update', () => {
   // Validates inserting a user document into database
-  const registerTestPayload2 = { auth: { email: 'test2@gmail.com', password: 'pass' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
+  const registerTestPayload2 = { auth: { email: 'test2@gmail.com', password: 'password' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
   const updateTestPayload = { first: 'John', last: 'Appleseed', orgName: 'Lantern' };
   it('It should update document in database', (done) => {
     chai.request(server).post('/api/users/register').send(registerTestPayload2).end((err, res) => {
