@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --require test/prepare --exit"
+    "test": "mocha --require test/prepare test/allTests.js --exit"
   },
   "author": "",
   "license": "ISC",
