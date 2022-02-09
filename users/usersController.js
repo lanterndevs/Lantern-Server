@@ -27,8 +27,8 @@ module.exports.register = [
     .isAlphanumeric().withMessage('First name has non-alphanumeric characters.'),
   check('bio.last').isLength({ min: 1 }).trim().withMessage('Last name must be specified.')
     .isAlphanumeric().withMessage('Last name has non-alphanumeric characters.'),
-  check('bio.orgName').isLength({ min: 1 }).trim().withMessage('Last name must be specified.')
-    .isAlphanumeric().withMessage('Last name has non-alphanumeric characters.'),
+  check('bio.orgName').isLength({ min: 1 }).trim().withMessage('Organization name must be specified.')
+    .isAlphanumeric().withMessage('Organization name has non-alphanumeric characters.'),
   check('auth.email').isLength({ min: 1 }).trim().withMessage('Email must be specified.')
     .isEmail().withMessage('Email must be a valid email address.'),
   check('auth.password').isLength({ min: 6 }).trim().withMessage('Password must be 6 characters or greater.'),
@@ -115,8 +115,8 @@ module.exports.updateUserProfile = [
     .isAlphanumeric().withMessage('First name has non-alphanumeric characters.'),
   check('last').isLength({ min: 1 }).trim().withMessage('Last name must be specified.')
     .isAlphanumeric().withMessage('Last name has non-alphanumeric characters.'),
-  check('orgName').isLength({ min: 1 }).trim().withMessage('Last name must be specified.')
-    .isAlphanumeric().withMessage('Last name has non-alphanumeric characters.'),
+  check('orgName').isLength({ min: 1 }).trim().withMessage('Organization name must be specified.')
+    .isAlphanumeric().withMessage('Organization name has non-alphanumeric characters.'),
   (req, res) => {
     mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.user.email }).toArray((e, docs) => {
       if (docs.length === 0) {
