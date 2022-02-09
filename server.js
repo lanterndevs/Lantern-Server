@@ -3,12 +3,14 @@ const mongoDBConnection = require('./mongoDBConnection');
 const Express = require('express');
 const BodyParser = require('body-parser');
 const OpenApiValidator = require('express-openapi-validator');
-const port = 3000;
+const port = process.env.SERVER_PORT;
 
 const usersRouter = require('./users/router');
 const linkRouter = require('./link/router');
+const cors = require("cors");
 
 const server = Express();
+server.use(cors());
 server.use(BodyParser.json());
 server.use(BodyParser.urlencoded({ extended: true }));
 server.use(
