@@ -9,6 +9,17 @@ const usersRouter = require('./users/router');
 const linkRouter = require('./link/router');
 
 const server = Express();
+
+// set up rate limiter: maximum of five requests per minute
+const RateLimit = require('express-rate-limit');
+const limiter = RateLimit({
+  windowMs: 1*60*1000, // 1 minute
+  max: 100
+});
+
+// apply rate limiter to all requests
+server.use(limiter);
+
 server.use(BodyParser.json());
 server.use(BodyParser.urlencoded({ extended: true }));
 server.use(
