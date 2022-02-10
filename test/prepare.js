@@ -1,7 +1,7 @@
 const mongoDBConnection = require('../mongoDBConnection');
 const prepare = require('mocha-prepare');
 const mms = require('mongodb-memory-server').MongoMemoryServer;
-const { exec } = require("child_process");
+const { exec } = require('child_process');
 
 let mongodb;
 
@@ -20,7 +20,7 @@ prepare((done) => {
   });
 }, (done) => {
   // Called after tests are completed
-  exec("mongoexport --collection=LanternUsers --db=Lantern --forceTableScan --out=test_db.json --pretty", (error, stdout, stderr) => {
+  exec('mongoexport --collection=LanternUsers --db=Lantern --forceTableScan --out=test_db.json --pretty', (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
       done();

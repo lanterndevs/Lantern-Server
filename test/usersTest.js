@@ -1,4 +1,4 @@
-const { chai, server, assert, should } = require('./testConfig');
+const { chai, server } = require('./testConfig');
 const mongoDBConnection = require('../mongoDBConnection');
 const { ObjectId } = require('mongodb');
 
@@ -118,6 +118,9 @@ describe('/POST /api/users/update', () => {
   // Validates duplicate email condition
   it("Shouldn't accept valid token", (done) => {
     chai.request(server).post('/api/users/update').set('Authorization', 'Bearer invalid_token').send(updateTestPayload).end((err, res) => {
+      if (err) {
+        console.log(err);
+      }
       res.should.have.status(403);
       done();
     });
