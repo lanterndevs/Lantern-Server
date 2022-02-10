@@ -4,7 +4,7 @@ const { chai, server } = require('./testConfig');
 describe('/GET /api/accounts', () => {
   it('It should get all accounts for a given user', (done) => {
     // First login and get token
-    const loginPayload = { email: 'test@gmail.com', password: 'pass' };
+    const loginPayload = { email: 'test@gmail.com', password: 'password' };
     chai.request(server).post('/api/users/authenticate').send(loginPayload).end((err, res) => {
       if (err) {
         console.log(err);
