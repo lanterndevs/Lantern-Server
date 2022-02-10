@@ -54,7 +54,8 @@ module.exports.exchange = async (req, res) => {
     //const itemId = response.data.item_id
     // Store full item and accessTokens in database
     let item = await plaid.getItem(accessToken);
-    mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $push: {items: item, accessTokens: accessToken} }, (e, dbRes) => {
+    item.accessToken = accessToken;
+    mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $push: {items: item} }, (e, dbRes) => {
       if (e) {
         res.status(500).json({ message: 'Database insert Item Error!' });
       } else {
