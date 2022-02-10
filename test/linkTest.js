@@ -19,8 +19,8 @@ describe('/GET /api/link', () => {
         if (err2) {
           console.log(err2);
         }
-        res.should.have.status(200);
-        res.body.should.have.property('token');
+        res2.should.have.status(200);
+        res2.body.should.have.property('token');
         done();
       });
     });
@@ -58,8 +58,8 @@ describe('/POST /api/link', () => {
         if (err2) {
           console.log(err2);
         }
-        res.should.have.status(200);
-        res.body.should.have.property('token');
+        res2.should.have.status(200);
+        res2.body.should.have.property('token');
         done();
       });
     });
