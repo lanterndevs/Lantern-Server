@@ -1,18 +1,6 @@
 const plaid = require('../plaidConnection');
 const mongoDBConnection = require('../mongoDBConnection');
 
-module.exports.getAccessTokens = (req, res, next) => {
-  // Get all of user's access tokens
-  mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.user.email }, { accessTokens: 1 }).toArray((e, docs) => {
-    if (e) {
-      res.status(403).json({ message: 'No valid Items (with access tokens) found for user!' });
-    } else {
-      req.user.accessTokens = docs;
-      next();
-    }
-  });
-};
-
 /*
 GET /create
 
