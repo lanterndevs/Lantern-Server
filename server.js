@@ -7,13 +7,14 @@ const port = 3000;
 
 const usersRouter = require('./users/router');
 const linkRouter = require('./link/router');
+const accountsRouter = require('./accounts/router');
 
 const server = Express();
 
 // set up rate limiter: maximum of five requests per minute
 const RateLimit = require('express-rate-limit');
 const limiter = RateLimit({
-  windowMs: 1*60*1000, // 1 minute
+  windowMs: 1 * 60 * 1000, // 1 minute
   max: 100
 });
 
@@ -44,6 +45,7 @@ server.get('/', (req, res) => {
 
 server.use('/api/', usersRouter);
 server.use('/api/', linkRouter);
+server.use('/api/', accountsRouter);
 
 // Bypass connections if running tests
 if (process.env.NODE_ENV !== 'test') {
