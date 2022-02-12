@@ -335,10 +335,10 @@ components:
       description: A financial transaction
       required:
       - name
-      - source
-      - destination
+      - accountID
       - date
       - amount
+      - categories
       type: object
       properties:
         name:
@@ -347,12 +347,6 @@ components:
         details:
           description: Additional description for the transaction
           type: string
-        source:
-          $ref: '#/components/schemas/Account'
-          description: Source account of the transaction
-        destination:
-          $ref: '#/components/schemas/Account'
-          description: Destination account of the transaction
         date:
           format: date
           description: Date transaction occurred
@@ -361,6 +355,14 @@ components:
           description: Monetary amount ($USD) moved from source account to destination
             account as a result of this transaction
           type: number
+        accountID:
+          description: Plaid account ID of the account transaction is associated with
+          type: string
+        categories:
+          description: Array of categories
+          type: array
+          items:
+            type: string
     Institution:
       description: Represents a financial institution
       required:

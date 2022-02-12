@@ -8,6 +8,7 @@ const port = 3000;
 const usersRouter = require('./users/router');
 const linkRouter = require('./link/router');
 const accountsRouter = require('./accounts/router');
+const transactionsRouter = require('./transactions/router');
 
 const server = Express();
 
@@ -46,6 +47,7 @@ server.get('/', (req, res) => {
 server.use('/api/', usersRouter);
 server.use('/api/', linkRouter);
 server.use('/api/', accountsRouter);
+server.use('/api/', transactionsRouter);
 
 // Bypass connections if running tests
 if (process.env.NODE_ENV !== 'test') {
