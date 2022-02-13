@@ -7,8 +7,7 @@ const port = process.env.SERVER_PORT;
 
 const usersRouter = require('./users/router');
 const linkRouter = require('./link/router');
-const cors = require("cors");
-
+const cors = require('cors');
 
 const accountsRouter = require('./accounts/router');
 
