@@ -9,7 +9,20 @@ const usersRouter = require('./users/router');
 const linkRouter = require('./link/router');
 const cors = require("cors");
 
+
+const accountsRouter = require('./accounts/router');
+
 const server = Express();
+
+// set up rate limiter: maximum of five requests per minute
+const RateLimit = require('express-rate-limit');
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100
+});
+
+// apply rate limiter to all requests
+server.use(limiter);
 server.use(cors());
 server.use(BodyParser.json());
 server.use(BodyParser.urlencoded({ extended: true }));
@@ -35,6 +48,7 @@ server.get('/', (req, res) => {
 
 server.use('/api/', usersRouter);
 server.use('/api/', linkRouter);
+server.use('/api/', accountsRouter);
 
 // Bypass connections if running tests
 if (process.env.NODE_ENV !== 'test') {

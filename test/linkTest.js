@@ -6,7 +6,7 @@ describe('/GET /api/link', () => {
   // Get a link token
   it('It should get a Plaid link token', (done) => {
     // First login and get token
-    const loginPayload = { email: 'test@gmail.com', password: 'pass' };
+    const loginPayload = { email: 'test@gmail.com', password: 'password' };
     chai.request(server).post('/api/users/authenticate').send(loginPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -19,8 +19,8 @@ describe('/GET /api/link', () => {
         if (err2) {
           console.log(err2);
         }
-        res.should.have.status(200);
-        res.body.should.have.property('token');
+        res2.should.have.status(200);
+        res2.body.should.have.property('token');
         done();
       });
     });
@@ -44,7 +44,7 @@ describe('/POST /api/link', () => {
 
   it('It should exchange public_token for access_token', (done) => {
     // First login and get client token
-    const loginPayload = { email: 'test@gmail.com', password: 'pass' };
+    const loginPayload = { email: 'test@gmail.com', password: 'password' };
     chai.request(server).post('/api/users/authenticate').send(loginPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -58,8 +58,8 @@ describe('/POST /api/link', () => {
         if (err2) {
           console.log(err2);
         }
-        res.should.have.status(200);
-        res.body.should.have.property('token');
+        res2.should.have.status(200);
+        res2.body.should.have.property('token');
         done();
       });
     });
