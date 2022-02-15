@@ -3,3 +3,4 @@ require('./authTests');
 require('./usersTest');
 require('./linkTest');
 require('./accountsTest');
+require('./transactionsTest');
