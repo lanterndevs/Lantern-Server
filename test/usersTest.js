@@ -126,8 +126,7 @@ describe('/POST /api/users/update', () => {
     });
   });
 
-  // Validates duplicate email condition
-  it("Shouldn't accept valid token", (done) => {
+  it("Shouldn't accept invalid token", (done) => {
     chai.request(server).post('/api/users/update').set('Authorization', 'Bearer invalid_token').send(updateTestPayload).end((err, res) => {
       if (err) {
         console.log(err);
