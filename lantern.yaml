@@ -28,7 +28,7 @@ paths:
       security:
       - clientToken: []
       operationId: getAccounts
-      summary: List all accounts for specified user
+      summary: GET /api/accounts
       description: Gets a list of all `Account` entities for user owning provided
         token
     post:
@@ -45,7 +45,7 @@ paths:
       security:
       - clientToken: []
       operationId: createAccount
-      summary: Create a Account
+      summary: POST /api/accounts
       description: Creates a new instance of a `Account`.
   /api/accounts/{accountId}:
     summary: Path used to manage a single Account.
@@ -63,7 +63,7 @@ paths:
       security:
       - clientToken: []
       operationId: getAccount
-      summary: Get a Account
+      summary: GET /api/accounts/:id
       description: Gets the details of a single instance of a `Account`.
     put:
       requestBody:
@@ -79,7 +79,7 @@ paths:
       security:
       - clientToken: []
       operationId: updateAccount
-      summary: Update a Account
+      summary: PUT /api/accounts/:id
       description: Updates an existing `Account`.
     delete:
       responses:
@@ -88,7 +88,7 @@ paths:
       security:
       - clientToken: []
       operationId: deleteAccount
-      summary: Delete a Account
+      summary: DELETE /api/accounts/:id
       description: Deletes an existing `Account`.
     parameters:
     - name: accountId
@@ -105,12 +105,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/PlaidLinkToken'
           description: Successfully created link token
       security:
       - clientToken: []
       operationId: createLinkToken
-      summary: Get link_token
+      summary: GET /api/link
       description: "The first step of linking a bank account.  Server will request\
         \ a link_token from Plaid /link/token/create endpoint, and return the temporary\
         \ token to the client."
@@ -119,19 +119,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Token'
+              $ref: '#/components/schemas/PlaidPublicToken'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/PlaidAccessToken'
           description: Exchange successful
       security:
       - clientToken: []
       operationId: exchangePublicForItem
-      summary: Exchange public token for Item
+      summary: POST /api/link
       description: "Calls /item/public_token/exchange.  This returns an access token\
         \ and item ID.  Complete the rest of the fields in an Item, store it in the\
         \ database, then return a complete item."
@@ -151,7 +151,7 @@ paths:
       security:
       - clientToken: []
       operationId: getTransactions
-      summary: List all transactions for specified user
+      summary: GET /api/transactions
       description: Gets a list of all `Transaction` entities for user owning provided
         token
     post:
@@ -168,7 +168,7 @@ paths:
       security:
       - clientToken: []
       operationId: createTransaction
-      summary: Create a Transaction
+      summary: POST /api/transactions
       description: Creates a new instance of a `Transaction`.
   /api/transactions/{transactionId}:
     summary: Path used to manage a single Transaction.
@@ -186,7 +186,7 @@ paths:
       security:
       - clientToken: []
       operationId: getTransaction
-      summary: Get a Transaction
+      summary: GET /api/transactions/:id
       description: Gets the details of a single instance of a `Transaction`.
     put:
       requestBody:
@@ -202,7 +202,7 @@ paths:
       security:
       - clientToken: []
       operationId: updateTransaction
-      summary: Update a Transaction
+      summary: PUT /api/transactions/:id
       description: Updates an existing `Transaction`.
     delete:
       responses:
@@ -211,7 +211,7 @@ paths:
       security:
       - clientToken: []
       operationId: deleteTransaction
-      summary: Delete a Transaction
+      summary: DELETE /api/transactions/:id
       description: Deletes an existing `Transaction`.
     parameters:
     - name: transactionId
@@ -246,7 +246,7 @@ paths:
                   value: Invalid email or password!
           description: User authentication info is invalid
       operationId: authenticateClient
-      summary: Request token to authenticate client
+      summary: POST /api/users/authenticate
   /api/users/register:
     summary: For registration of new users (organizations)
     post:
@@ -270,7 +270,7 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Email already in use!
       operationId: registerUser
-      summary: Register a new user and initialize their account
+      summary: POST /api/users/register
   /:
     summary: Generic test endpoint
     get:
@@ -307,7 +307,7 @@ paths:
       security:
       - clientToken: []
       operationId: updateUserProfile
-      summary: Update user bio information
+      summary: POST /api/users/update
 components:
   schemas:
     User:
@@ -450,13 +450,6 @@ components:
         balance:
           description: Current account balance
           type: number
-    ClientAuthToken:
-      oneOf:
-      - type: object
-      - $ref: '#/components/schemas/Token'
-      description: Token (or key) used by frontended to authenticate and authorize
-        itself with the backend
-      type: object
     Token:
       description: Generic token type
       required:
@@ -466,25 +459,6 @@ components:
         token:
           description: Token
           type: string
-    PlaidAccessToken:
-      oneOf:
-      - type: object
-      - $ref: '#/components/schemas/Token'
-      description: Plaid Access Token for a given Item
-      type: object
-    PlaidLinkToken:
-      oneOf:
-      - type: object
-      - $ref: '#/components/schemas/Token'
-      description: Temporary link_token from Plaid
-      type: object
-    PlaidPublicToken:
-      oneOf:
-      - type: object
-      - $ref: '#/components/schemas/Token'
-      description: "During Link process, Plaid public token is exchanged for a permanent\
-        \ access token"
-      type: object
     PlaidItem:
       required:
       - userID
@@ -520,19 +494,6 @@ components:
         message:
           description: Generic message string
           type: string
-    UserRegistrationRecord:
-      description: Data about a user registration event.  Returned by register endpoint.
-      required:
-      - token
-      - _id
-      type: object
-      properties:
-        token:
-          description: Token granted to user
-          type: string
-        _id:
-          description: Object insertion ID from MongoDB
-          type: string
     UserPassHash:
       description: "Hash of user password, and some information about it"
       required:
@@ -546,6 +507,35 @@ components:
         hash:
           description: Hashed password
           type: string
+    PlaidLinkToken:
+      oneOf:
+      - $ref: '#/components/schemas/Token'
+      description: Temporary link_token from Plaid
+    ClientAuthToken:
+      oneOf:
+      - $ref: '#/components/schemas/Token'
+      description: Token (or key) used by frontended to authenticate and authorize
+        itself with the backend
+    PlaidAccessToken:
+      oneOf:
+      - $ref: '#/components/schemas/Token'
+      description: Plaid Access Token for a given Item
+    PlaidPublicToken:
+      oneOf:
+      - $ref: '#/components/schemas/Token'
+      description: "During Link process, Plaid public token is exchanged for a permanent\
+        \ access token"
+    UserRegistrationRecord:
+      description: Data about a user registration event.  Returned by register endpoint.
+      allOf:
+      - required:
+        - _id
+        type: object
+        properties:
+          _id:
+            description: Object insertion ID from MongoDB
+            type: string
+      - $ref: '#/components/schemas/ClientAuthToken'
   securitySchemes:
     clientToken:
       type: apiKey
