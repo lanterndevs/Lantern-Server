@@ -25,78 +25,28 @@ paths:
                 items:
                   $ref: '#/components/schemas/Account'
           description: Successful response - returns an array of `Account` entities.
+        "401":
+          description: No ClientAuthToken provided
+        "403":
+          description: Invalid ClientAuthToken!
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Database/Plaid error
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: No valid Plaid credentials in account! Cannot complete request.
       security:
       - clientToken: []
       operationId: getAccounts
       summary: GET /api/accounts
       description: Gets a list of all `Account` entities for user owning provided
         token
-    post:
-      requestBody:
-        description: A new `Account` to be created.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Account'
-        required: true
-      responses:
-        "201":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: createAccount
-      summary: POST /api/accounts
-      description: Creates a new instance of a `Account`.
-  /api/accounts/{accountId}:
-    summary: Path used to manage a single Account.
-    description: "The REST endpoint/path used to get, update, and delete single instances\
-      \ of an `Account`.  This path contains `GET`, `PUT`, and `DELETE` operations\
-      \ used to perform the get, update, and delete tasks, respectively."
-    get:
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Account'
-          description: Successful response - returns a single `Account`.
-      security:
-      - clientToken: []
-      operationId: getAccount
-      summary: GET /api/accounts/:id
-      description: Gets the details of a single instance of a `Account`.
-    put:
-      requestBody:
-        description: Updated `Account` information.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Account'
-        required: true
-      responses:
-        "202":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: updateAccount
-      summary: PUT /api/accounts/:id
-      description: Updates an existing `Account`.
-    delete:
-      responses:
-        "204":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: deleteAccount
-      summary: DELETE /api/accounts/:id
-      description: Deletes an existing `Account`.
-    parameters:
-    - name: accountId
-      description: A unique identifier for a `Account`.
-      schema:
-        type: string
-      in: path
-      required: true
   /api/link:
     summary: For Plaid Link functionality
     get:
@@ -107,6 +57,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlaidLinkToken'
           description: Successfully created link token
+        "401":
+          description: No ClientAuthToken provided
+        "403":
+          description: ClientAuthToken invalid
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Database/Plaid error
       security:
       - clientToken: []
       operationId: createLinkToken
@@ -128,6 +88,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlaidAccessToken'
           description: Exchange successful
+        "401":
+          description: No ClientAuthToken provided
+        "403":
+          description: Invalid ClientAuthToken!
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Database/Plaid error
       security:
       - clientToken: []
       operationId: exchangePublicForItem
@@ -148,78 +118,28 @@ paths:
                 items:
                   $ref: '#/components/schemas/Transaction'
           description: Successful response - returns an array of `Transaction` entities.
+        "401":
+          description: ClientAuthToken not provided
+        "403":
+          description: ClientAuthToken invalid!
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Database/Plaid error!
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: "No valid plaid items in user account, cannot make request!"
       security:
       - clientToken: []
       operationId: getTransactions
       summary: GET /api/transactions
       description: Gets a list of all `Transaction` entities for user owning provided
         token
-    post:
-      requestBody:
-        description: A new `Transaction` to be created.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transaction'
-        required: true
-      responses:
-        "201":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: createTransaction
-      summary: POST /api/transactions
-      description: Creates a new instance of a `Transaction`.
-  /api/transactions/{transactionId}:
-    summary: Path used to manage a single Transaction.
-    description: "The REST endpoint/path used to get, update, and delete single instances\
-      \ of an `Transaction`.  This path contains `GET`, `PUT`, and `DELETE` operations\
-      \ used to perform the get, update, and delete tasks, respectively."
-    get:
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Transaction'
-          description: Successful response - returns a single `Transaction`.
-      security:
-      - clientToken: []
-      operationId: getTransaction
-      summary: GET /api/transactions/:id
-      description: Gets the details of a single instance of a `Transaction`.
-    put:
-      requestBody:
-        description: Updated `Transaction` information.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transaction'
-        required: true
-      responses:
-        "202":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: updateTransaction
-      summary: PUT /api/transactions/:id
-      description: Updates an existing `Transaction`.
-    delete:
-      responses:
-        "204":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: deleteTransaction
-      summary: DELETE /api/transactions/:id
-      description: Deletes an existing `Transaction`.
-    parameters:
-    - name: transactionId
-      description: A unique identifier for a `Transaction`.
-      schema:
-        type: string
-      in: path
-      required: true
   /api/users/authenticate:
     summary: To authenticate (login) User client
     post:
@@ -269,6 +189,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Email already in use!
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Database record insertion error
       operationId: registerUser
       summary: POST /api/users/register
   /:
@@ -304,6 +230,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
           description: Error
+        "401":
+          description: ClientAuthToken not provided
+        "403":
+          description: Invalid ClientAuthToken!
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Account invalid!
       security:
       - clientToken: []
       operationId: updateUserProfile
