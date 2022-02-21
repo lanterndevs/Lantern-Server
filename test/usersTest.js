@@ -20,7 +20,7 @@ describe('/GET /', () => {
 describe('/POST /api/users/register', () => {
   const registerTestPayload = { auth: { email: 'test@gmail.com', password: 'password' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
   // Validates inserting a user document into database
-  it('It should register a user', (done) => {
+  it('200: It should register a user', (done) => {
     chai.request(server).post('/api/users/register').send(registerTestPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -36,7 +36,7 @@ describe('/POST /api/users/register', () => {
   });
 
   const registerBadPassTestPayload = { auth: { email: 'test@gmail.com', password: 'pass' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
-  it('It should detect invalid password', (done) => {
+  it('400: It should detect invalid password', (done) => {
     chai.request(server).post('/api/users/register').send(registerBadPassTestPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -47,7 +47,7 @@ describe('/POST /api/users/register', () => {
   });
 
   // Validates duplicate email condition
-  it('Emails should be unique per account', (done) => {
+  it('400: Emails should be unique per account', (done) => {
     chai.request(server).post('/api/users/register').send(registerTestPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -63,7 +63,7 @@ describe('/POST /api/users/register', () => {
 describe('/POST /api/users/authenticate', () => {
   const loginPayload = { email: 'test@gmail.com', password: 'password' };
   // Validates logging in user
-  it('It should log in a user (grant JWT)', (done) => {
+  it('200: It should log in a user (grant JWT)', (done) => {
     chai.request(server).post('/api/users/authenticate').send(loginPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -76,7 +76,7 @@ describe('/POST /api/users/authenticate', () => {
 
   const incorrectPasswordPayload = { email: 'test@gmail.com', password: 'incorrectPass' };
   // Validates incorrect password error
-  it('It should give an invalid password error', (done) => {
+  it('401: It should give an invalid password error', (done) => {
     chai.request(server).post('/api/users/authenticate').send(incorrectPasswordPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -89,7 +89,7 @@ describe('/POST /api/users/authenticate', () => {
 
   const incorrectLoginPayload = { email: 'incorrect@gmail.com', password: 'someIncorrectPass' };
   // Validates incorrect email/password error
-  it('It should give an invalid password error', (done) => {
+  it('401: It should give an invalid password error', (done) => {
     chai.request(server).post('/api/users/authenticate').send(incorrectLoginPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -106,7 +106,7 @@ describe('/POST /api/users/update', () => {
   // Validates inserting a user document into database
   const registerTestPayload2 = { auth: { email: 'test2@gmail.com', password: 'password' }, bio: { first: 'Johnny', last: 'Appleseed', orgName: 'Lantern' } };
   const updateTestPayload = { first: 'John', last: 'Appleseed', orgName: 'Lantern' };
-  it('It should update document in database', (done) => {
+  it('200: It should update document in database', (done) => {
     chai.request(server).post('/api/users/register').send(registerTestPayload2).end((err, res) => {
       if (err) {
         console.log(err);
@@ -126,7 +126,18 @@ describe('/POST /api/users/update', () => {
     });
   });
 
-  it("Shouldn't accept invalid token", (done) => {
+  it("401: Shouldn't accept no token", (done) => {
+    chai.request(server).post('/api/users/update').send(updateTestPayload).end((err, res) => {
+      if (err) {
+        console.log(err);
+      }
+      res.should.have.status(401);
+      res.body.should.have.property('message');
+      done();
+    });
+  });
+
+  it("403: Shouldn't accept invalid token", (done) => {
     chai.request(server).post('/api/users/update').set('Authorization', 'Bearer invalid_token').send(updateTestPayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -135,4 +146,6 @@ describe('/POST /api/users/update', () => {
       done();
     });
   });
+
+
 });
