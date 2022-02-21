@@ -75,7 +75,7 @@ describe('/POST /api/link', () => {
       res.body.should.have.property('token');
       const clientToken = res.body.token;
       // Now hit exchange payload
-      const exchangePayload = {token: publicToken};
+      const exchangePayload = { token: publicToken };
       chai.request(server).post('/api/link').set('Authorization', 'Bearer ' + clientToken).send(exchangePayload).end((err2, res2) => {
         if (err2) {
           console.log(err2);
@@ -89,7 +89,7 @@ describe('/POST /api/link', () => {
 
   it('401: It should reject missing auth token', (done) => {
     // Hit create endpoint using no token
-    const exchangePayload = {token: publicToken};
+    const exchangePayload = { token: publicToken };
     chai.request(server).post('/api/link').send(exchangePayload).end((err, res) => {
       if (err) {
         console.log(err);
@@ -101,7 +101,7 @@ describe('/POST /api/link', () => {
 
   it('403: It should reject invalid auth token', (done) => {
     // Hit create endpoint using invalid token
-    const exchangePayload = {token: publicToken};
+    const exchangePayload = { token: publicToken };
     chai.request(server).post('/api/link').set('Authorization', 'Bearer invalidToken').send(exchangePayload).end((err, res) => {
       if (err) {
         console.log(err);

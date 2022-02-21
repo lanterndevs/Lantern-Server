@@ -146,6 +146,4 @@ describe('/POST /api/users/update', () => {
       done();
     });
   });
-
-
 });

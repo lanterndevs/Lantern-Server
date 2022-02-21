@@ -8,9 +8,9 @@ function generateAccessToken (username) {
 function authenticateToken (req, res, next) {
   const authHeader = req.get('Authorization');
   if (authHeader == null) return res.sendStatus(401);
-  let splitHeader = authHeader.split(' ');
+  const splitHeader = authHeader.split(' ');
   if (splitHeader.length !== 2) return res.sendStatus(401);
-  let token = splitHeader[1];
+  const token = splitHeader[1];
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
