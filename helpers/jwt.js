@@ -7,9 +7,10 @@ function generateAccessToken (username) {
 // authentication header: "bearer <token>"
 function authenticateToken (req, res, next) {
   const authHeader = req.get('Authorization');
-  const token = authHeader.split(' ')[1];
-
-  if (token == null) return res.sendStatus(401);
+  if (authHeader == null) return res.sendStatus(401);
+  const splitHeader = authHeader.split(' ');
+  if (splitHeader.length !== 2) return res.sendStatus(401);
+  const token = splitHeader[1];
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);

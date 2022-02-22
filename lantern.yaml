@@ -25,78 +25,28 @@ paths:
                 items:
                   $ref: '#/components/schemas/Account'
           description: Successful response - returns an array of `Account` entities.
-      security:
-      - clientToken: []
-      operationId: getAccounts
-      summary: List all accounts for specified user
-      description: Gets a list of all `Account` entities for user owning provided
-        token
-    post:
-      requestBody:
-        description: A new `Account` to be created.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Account'
-        required: true
-      responses:
-        "201":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: createAccount
-      summary: Create a Account
-      description: Creates a new instance of a `Account`.
-  /api/accounts/{accountId}:
-    summary: Path used to manage a single Account.
-    description: "The REST endpoint/path used to get, update, and delete single instances\
-      \ of an `Account`.  This path contains `GET`, `PUT`, and `DELETE` operations\
-      \ used to perform the get, update, and delete tasks, respectively."
-    get:
-      responses:
-        "200":
+        "401":
+          description: No ClientAuthToken provided
+        "403":
+          description: Invalid ClientAuthToken!
+        "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Account'
-          description: Successful response - returns a single `Account`.
+                $ref: '#/components/schemas/Message'
+          description: Database/Plaid error
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: No valid Plaid credentials in account! Cannot complete request.
       security:
       - clientToken: []
-      operationId: getAccount
-      summary: Get a Account
-      description: Gets the details of a single instance of a `Account`.
-    put:
-      requestBody:
-        description: Updated `Account` information.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Account'
-        required: true
-      responses:
-        "202":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: updateAccount
-      summary: Update a Account
-      description: Updates an existing `Account`.
-    delete:
-      responses:
-        "204":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: deleteAccount
-      summary: Delete a Account
-      description: Deletes an existing `Account`.
-    parameters:
-    - name: accountId
-      description: A unique identifier for a `Account`.
-      schema:
-        type: string
-      in: path
-      required: true
+      operationId: getAccounts
+      summary: GET /api/accounts
+      description: Gets a list of all `Account` entities for user owning provided
+        token
   /api/link:
     summary: For Plaid Link functionality
     get:
@@ -105,12 +55,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/PlaidLinkToken'
           description: Successfully created link token
+        "401":
+          description: No ClientAuthToken provided
+        "403":
+          description: ClientAuthToken invalid
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Database/Plaid error
       security:
       - clientToken: []
       operationId: createLinkToken
-      summary: Get link_token
+      summary: GET /api/link
       description: "The first step of linking a bank account.  Server will request\
         \ a link_token from Plaid /link/token/create endpoint, and return the temporary\
         \ token to the client."
@@ -119,19 +79,29 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Token'
+              $ref: '#/components/schemas/PlaidPublicToken'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: '#/components/schemas/PlaidAccessToken'
           description: Exchange successful
+        "401":
+          description: No ClientAuthToken provided
+        "403":
+          description: Invalid ClientAuthToken!
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Database/Plaid error
       security:
       - clientToken: []
       operationId: exchangePublicForItem
-      summary: Exchange public token for Item
+      summary: POST /api/link
       description: "Calls /item/public_token/exchange.  This returns an access token\
         \ and item ID.  Complete the rest of the fields in an Item, store it in the\
         \ database, then return a complete item."
@@ -148,78 +118,28 @@ paths:
                 items:
                   $ref: '#/components/schemas/Transaction'
           description: Successful response - returns an array of `Transaction` entities.
-      security:
-      - clientToken: []
-      operationId: getTransactions
-      summary: List all transactions for specified user
-      description: Gets a list of all `Transaction` entities for user owning provided
-        token
-    post:
-      requestBody:
-        description: A new `Transaction` to be created.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transaction'
-        required: true
-      responses:
-        "201":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: createTransaction
-      summary: Create a Transaction
-      description: Creates a new instance of a `Transaction`.
-  /api/transactions/{transactionId}:
-    summary: Path used to manage a single Transaction.
-    description: "The REST endpoint/path used to get, update, and delete single instances\
-      \ of an `Transaction`.  This path contains `GET`, `PUT`, and `DELETE` operations\
-      \ used to perform the get, update, and delete tasks, respectively."
-    get:
-      responses:
-        "200":
+        "401":
+          description: ClientAuthToken not provided
+        "403":
+          description: ClientAuthToken invalid!
+        "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Transaction'
-          description: Successful response - returns a single `Transaction`.
+                $ref: '#/components/schemas/Message'
+          description: Database/Plaid error!
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: "No valid plaid items in user account, cannot make request!"
       security:
       - clientToken: []
-      operationId: getTransaction
-      summary: Get a Transaction
-      description: Gets the details of a single instance of a `Transaction`.
-    put:
-      requestBody:
-        description: Updated `Transaction` information.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transaction'
-        required: true
-      responses:
-        "202":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: updateTransaction
-      summary: Update a Transaction
-      description: Updates an existing `Transaction`.
-    delete:
-      responses:
-        "204":
-          description: Successful response.
-      security:
-      - clientToken: []
-      operationId: deleteTransaction
-      summary: Delete a Transaction
-      description: Deletes an existing `Transaction`.
-    parameters:
-    - name: transactionId
-      description: A unique identifier for a `Transaction`.
-      schema:
-        type: string
-      in: path
-      required: true
+      operationId: getTransactions
+      summary: GET /api/transactions
+      description: Gets a list of all `Transaction` entities for user owning provided
+        token
   /api/users/authenticate:
     summary: To authenticate (login) User client
     post:
@@ -246,7 +166,7 @@ paths:
                   value: Invalid email or password!
           description: User authentication info is invalid
       operationId: authenticateClient
-      summary: Request token to authenticate client
+      summary: POST /api/users/authenticate
   /api/users/register:
     summary: For registration of new users (organizations)
     post:
@@ -269,8 +189,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Email already in use!
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Database record insertion error
       operationId: registerUser
-      summary: Register a new user and initialize their account
+      summary: POST /api/users/register
   /:
     summary: Generic test endpoint
     get:
@@ -304,10 +230,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
           description: Error
+        "401":
+          description: ClientAuthToken not provided
+        "403":
+          description: Invalid ClientAuthToken!
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: Account invalid!
       security:
       - clientToken: []
       operationId: updateUserProfile
-      summary: Update user bio information
+      summary: POST /api/users/update
 components:
   schemas:
     User:
@@ -450,13 +386,6 @@ components:
         balance:
           description: Current account balance
           type: number
-    ClientAuthToken:
-      oneOf:
-      - type: object
-      - $ref: '#/components/schemas/Token'
-      description: Token (or key) used by frontended to authenticate and authorize
-        itself with the backend
-      type: object
     Token:
       description: Generic token type
       required:
@@ -466,25 +395,6 @@ components:
         token:
           description: Token
           type: string
-    PlaidAccessToken:
-      oneOf:
-      - type: object
-      - $ref: '#/components/schemas/Token'
-      description: Plaid Access Token for a given Item
-      type: object
-    PlaidLinkToken:
-      oneOf:
-      - type: object
-      - $ref: '#/components/schemas/Token'
-      description: Temporary link_token from Plaid
-      type: object
-    PlaidPublicToken:
-      oneOf:
-      - type: object
-      - $ref: '#/components/schemas/Token'
-      description: "During Link process, Plaid public token is exchanged for a permanent\
-        \ access token"
-      type: object
     PlaidItem:
       required:
       - userID
@@ -520,19 +430,6 @@ components:
         message:
           description: Generic message string
           type: string
-    UserRegistrationRecord:
-      description: Data about a user registration event.  Returned by register endpoint.
-      required:
-      - token
-      - _id
-      type: object
-      properties:
-        token:
-          description: Token granted to user
-          type: string
-        _id:
-          description: Object insertion ID from MongoDB
-          type: string
     UserPassHash:
       description: "Hash of user password, and some information about it"
       required:
@@ -546,6 +443,35 @@ components:
         hash:
           description: Hashed password
           type: string
+    PlaidLinkToken:
+      oneOf:
+      - $ref: '#/components/schemas/Token'
+      description: Temporary link_token from Plaid
+    ClientAuthToken:
+      oneOf:
+      - $ref: '#/components/schemas/Token'
+      description: Token (or key) used by frontended to authenticate and authorize
+        itself with the backend
+    PlaidAccessToken:
+      oneOf:
+      - $ref: '#/components/schemas/Token'
+      description: Plaid Access Token for a given Item
+    PlaidPublicToken:
+      oneOf:
+      - $ref: '#/components/schemas/Token'
+      description: "During Link process, Plaid public token is exchanged for a permanent\
+        \ access token"
+    UserRegistrationRecord:
+      description: Data about a user registration event.  Returned by register endpoint.
+      allOf:
+      - required:
+        - _id
+        type: object
+        properties:
+          _id:
+            description: Object insertion ID from MongoDB
+            type: string
+      - $ref: '#/components/schemas/ClientAuthToken'
   securitySchemes:
     clientToken:
       type: apiKey

@@ -55,6 +55,7 @@ module.exports.getTransactions = async (req, res) => {
     } catch (err) {
       // handle error
       console.log(err);
+      res.status(500).json({ message: err });
     }
   }
 

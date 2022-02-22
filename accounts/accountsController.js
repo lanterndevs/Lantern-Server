@@ -31,6 +31,7 @@ module.exports.getAccounts = async (req, res) => {
     } catch (error) {
       // handle error
       console.log(error);
+      res.status(500).json({ message: error });
     }
   }
 
