@@ -1,5 +1,6 @@
 const { chai, server } = require('./testConfig');
 const plaid = require('../plaidConnection');
+const mongo = require('../mongoDBConnection');
 
 // Get Link Token test
 describe('/GET /api/link', () => {
@@ -62,7 +63,7 @@ describe('/POST /api/link', () => {
       publicToken = result.data.public_token;
       done();
     });
-  });
+  }).timeout(4000);
 
   it('200: It should exchange public_token for access_token', (done) => {
     // First login and get client token
@@ -83,6 +84,34 @@ describe('/POST /api/link', () => {
         res2.should.have.status(200);
         res2.body.should.have.property('token');
         done();
+      });
+    });
+  });
+
+  it('200: It should replace existing item if it applies to the same financial institution', (done) => {
+    // First login and get client token
+    const loginPayload = { email: 'test@gmail.com', password: 'password' };
+    chai.request(server).post('/api/users/authenticate').send(loginPayload).end((err, res) => {
+      if (err) {
+        console.log(err);
+      }
+      res.should.have.status(200);
+      res.body.should.have.property('token');
+      const clientToken = res.body.token;
+      // Now hit exchange payload
+      const exchangePayload = { token: publicToken };
+      chai.request(server).post('/api/link').set('Authorization', 'Bearer ' + clientToken).send(exchangePayload).end((err2, res2) => {
+        if (err2) {
+          console.log(err2);
+        }
+        res2.should.have.status(200);
+        res2.body.should.have.property('token');
+        // Now ensure only one item in database for user
+        mongo.get().collection('LanternUsers').find({ 'auth.email': loginPayload.email }).toArray((e, docs) => {
+          docs[0].items.should.have.length(1);
+          docs[0].items[0].accessToken.should.equal(res2.body.token);
+          done();
+        });
       });
     });
   });

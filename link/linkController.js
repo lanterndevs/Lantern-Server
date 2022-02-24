@@ -43,11 +43,34 @@ module.exports.exchange = async (req, res) => {
     // Store full item and accessTokens in database
     const item = await plaid.getItem(accessToken);
     item.accessToken = accessToken;
-    mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $push: { items: item } }, (e, dbRes) => {
-      if (e) {
-        res.status(500).json({ message: 'Database insert Item Error!' });
-      } else {
-        res.status(200).json({ token: accessToken });
+    // If item with same institution already exists, replace it
+    mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.user.email }).toArray((e, docs) => {
+      let replaceItem = false;
+      if (docs[0].items && docs[0].items.length > 0) {
+        for (let i = 0; i < docs[0].items.length; i++) {
+          if (docs[0].items[i].institution_id === item.institution_id) {
+            replaceItem = true;
+            // Replace item in user's item array
+            docs[0].items[i] = item;
+            mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $set: { items: docs[0].items } }, (e, dbRes) => {
+              if (e) {
+                res.status(500).json({ message: 'Database insert Item Error!' });
+              } else {
+                res.status(200).json({ token: accessToken });
+              }
+            });
+          }
+        }
+      }
+      // No matching item found - push item to database
+      if (!replaceItem) {
+        mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $push: { items: item } }, (e, dbRes) => {
+          if (e) {
+            res.status(500).json({ message: 'Database insert Item Error!' });
+          } else {
+            res.status(200).json({ token: accessToken });
+          }
+        });
       }
     });
   } catch (error) {
