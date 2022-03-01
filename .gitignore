@@ -1,2 +1,6 @@
-config.json
 .idea
+node_modules/
+config.json
+.env
+package-lock.json
+test_db.json
