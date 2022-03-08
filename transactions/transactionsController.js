@@ -12,36 +12,59 @@ Response: Array of transactions
 module.exports.getTransactions = async (req, res) => {
   // Get transactions from plaid
   const transactions = [];
+  let startDate;
+  let endDate;
+  let reqOptions = {};
   const today = new Date();
-  const start = addYears(copyDate(today), -2);
-  const todayString = getFormattedDate(today);
-  const startString = getFormattedDate(start);
+  // If start date specified
+  if (req.query.start_date != null) {
+    startDate = req.query.start_date;
+  } else {
+    startDate = getFormattedDate(addYears(copyDate(today), -2));
+  }
+  // If end date specified
+  if (req.query.end_date != null) {
+    endDate = req.query.end_date;
+  } else {
+    endDate = getFormattedDate(today);
+  }
+  // If page specified
+  if (req.query.offset != null) {
+    reqOptions.offset = req.query.offset;
+  } else {
+    reqOptions.offset = 0;
+  }
+
   for (let i = 0; i < req.user.items.length; i++) {
     const transactionsRequest = {
       access_token: req.user.items[i].accessToken,
-      start_date: startString,
-      end_date: todayString
+      start_date: startDate,
+      end_date: endDate,
+      options: reqOptions
     };
     try {
       const response = await plaid.client.transactionsGet(transactionsRequest);
+      console.log(response);
       let plaidTransactions = response.data.transactions;
       const totalTransactions = response.data.total_transactions;
-      // Manipulate the offset parameter to paginate
-      // transactions and retrieve all available data
-      while (plaidTransactions.length < totalTransactions) {
-        const paginatedRequest = {
-          access_token: req.user.items[i].accessToken,
-          start_date: startString,
-          end_date: todayString,
-          options: {
-            offset: plaidTransactions.length
-          }
-        };
-        const paginatedResponse = await plaid.client.transactionsGet(paginatedRequest);
-        plaidTransactions = plaidTransactions.concat(
-          paginatedResponse.data.transactions
-        );
+      // If offset not specified by request, continue to paginate
+      if (req.query.offset == null) {
+        while (plaidTransactions.length < totalTransactions) {
+          const paginatedRequest = {
+            access_token: req.user.items[i].accessToken,
+            start_date: startString,
+            end_date: todayString,
+            options: {
+              offset: plaidTransactions.length
+            }
+          };
+          const paginatedResponse = await plaid.client.transactionsGet(paginatedRequest);
+          plaidTransactions = plaidTransactions.concat(
+              paginatedResponse.data.transactions
+          );
+        }
       }
+      // Get just what we need
       for (let j = 0; j < plaidTransactions.length; j++) {
         transactions.push({
           accountID: plaidTransactions[j].account_id,
