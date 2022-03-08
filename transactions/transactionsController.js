@@ -44,9 +44,9 @@ module.exports.getTransactions = async (req, res) => {
     };
     try {
       const response = await plaid.client.transactionsGet(transactionsRequest);
-      console.log(response);
       let plaidTransactions = response.data.transactions;
       const totalTransactions = response.data.total_transactions;
+      console.log(totalTransactions);
       // If offset not specified by request, continue to paginate
       if (req.query.offset == null) {
         while (plaidTransactions.length < totalTransactions) {
