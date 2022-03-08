@@ -41,17 +41,33 @@ module.exports.exchange = async (req, res) => {
     const accessToken = response.data.access_token;
     // const itemId = response.data.item_id
     // Store full item and accessTokens in database
-    const item = await plaid.getItem(accessToken);
-    item.accessToken = accessToken;
+    const plaidItem = await plaid.getItem(accessToken);
+    // Now get more institution details
+    const institutionRequest = {
+      institution_id: plaidItem.institution_id,
+      country_codes: ['US']
+    };
+    const insResponse = await plaid.client.institutionsGetById(institutionRequest);
+    const plaidInstitution = insResponse.data.institution;
+    // Construct new item
+    const newItem = {
+      id: plaidItem.item_id,
+      institution: {
+        id: plaidInstitution.institution_id,
+        name: plaidInstitution.name
+      },
+      accessToken: accessToken,
+      webhook: plaidItem.webhook
+    }
     // If item with same institution already exists, replace it
     mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.user.email }).toArray((e, docs) => {
       let replaceItem = false;
       if (docs[0].items && docs[0].items.length > 0) {
         for (let i = 0; i < docs[0].items.length; i++) {
-          if (docs[0].items[i].institution_id === item.institution_id) {
+          if (docs[0].items[i].institution.id === newItem.institution.id) {
             replaceItem = true;
             // Replace item in user's item array
-            docs[0].items[i] = item;
+            docs[0].items[i] = newItem;
             mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $set: { items: docs[0].items } }, (e, dbRes) => {
               if (e) {
                 res.status(500).json({ message: 'Database insert Item Error!' });
@@ -64,7 +80,7 @@ module.exports.exchange = async (req, res) => {
       }
       // No matching item found - push item to database
       if (!replaceItem) {
-        mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $push: { items: item } }, (e, dbRes) => {
+        mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $push: { items: newItem } }, (e, dbRes) => {
           if (e) {
             res.status(500).json({ message: 'Database insert Item Error!' });
           } else {

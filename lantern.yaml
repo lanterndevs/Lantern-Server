@@ -288,8 +288,7 @@ components:
           description: Date transaction occurred
           type: string
         amount:
-          description: Monetary amount ($USD) moved from source account to destination
-            account as a result of this transaction
+          description: Monetary amount of transaction (amount moved OUT of the account)
           type: number
         accountID:
           description: Plaid account ID of the account transaction is associated with
@@ -307,8 +306,8 @@ components:
       type: object
       properties:
         id:
+          $ref: '#/components/schemas/InstitutionID'
           description: Plaid-provided institution id
-          type: string
         name:
           description: Name of financial institution
           type: string
@@ -366,9 +365,9 @@ components:
       description: Financial account
       required:
       - name
-      - institutionID
       - id
       - balance
+      - institution
       type: object
       properties:
         name:
@@ -377,15 +376,15 @@ components:
         description:
           description: Description of account
           type: string
-        institutionID:
-          description: Plaid-provided institution ID account is associated with
-          type: string
         id:
           description: Unique Account ID (provided by Plaid)
           type: string
         balance:
           description: Current account balance
           type: number
+        institution:
+          $ref: '#/components/schemas/Institution'
+          description: Financial institution account belongs to
     Token:
       description: Generic token type
       required:
@@ -397,28 +396,23 @@ components:
           type: string
     PlaidItem:
       required:
-      - userID
       - id
       - institution
       - webhook
-      - token
+      - accessToken
       type: object
       properties:
-        userID:
-          description: ID of user Item belongs to
-          type: integer
         id:
           description: Unique Item ID (Assigned by Plaid)
           type: string
         institution:
-          description: Unique ID representing a financial institution (provided by
-            Plaid)
-          type: string
+          $ref: '#/components/schemas/Institution'
+          description: Financial institution
         webhook:
           description: URL registered to receive webhooks for the item (Provided by
             Plaid)
           type: string
-        token:
+        accessToken:
           $ref: '#/components/schemas/PlaidAccessToken'
           description: Plaid access token for Item
     Message:
