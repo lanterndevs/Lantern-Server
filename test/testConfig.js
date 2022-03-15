@@ -9,7 +9,7 @@ chai.use(chaiHttp);
 const assert = require('chai').assert;
 const should = chai.should();
 
-const delay = ms => new Promise(res => setTimeout(res, ms));
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 module.exports = {
   chai: chai,

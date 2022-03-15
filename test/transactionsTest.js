@@ -36,18 +36,18 @@ describe('/GET /api/transactions', () => {
       const token = res.body.token;
       // Now hit transactions endpoint using token and SPECIFYING DATE RANGE
       chai.request(server).get('/api/transactions').set('Authorization', 'Bearer ' + token)
-          .query({
-            start_date: "2021-03-01",
-            end_date: "2022-01-01",
-            offset: 1
-          }).end((err2, res2) => {
-        if (err2) {
-          console.log(err2);
-        }
-        res2.should.have.status(200);
-        res2.body.should.have.lengthOf.above(0);
-        done();
-      });
+        .query({
+          start_date: '2021-03-01',
+          end_date: '2022-01-01',
+          offset: 1
+        }).end((err2, res2) => {
+          if (err2) {
+            console.log(err2);
+          }
+          res2.should.have.status(200);
+          res2.body.should.have.lengthOf.above(0);
+          done();
+        });
     });
   }).timeout(0);
 

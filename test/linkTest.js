@@ -140,10 +140,10 @@ describe('/POST /api/link', () => {
     });
   });
 
-  it('WAIT: It should wait 8 seconds to make sure accounts feature can be fully initialized for this account', (done => {
+  it('WAIT: It should wait 8 seconds to make sure accounts feature can be fully initialized for this account', done => {
     // Wait 8 seconds
     delay(8000).then(() => {
-      done()
+      done();
     });
-  })).timeout(9000);
+  }).timeout(9000);
 });

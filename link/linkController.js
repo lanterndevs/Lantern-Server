@@ -58,7 +58,7 @@ module.exports.exchange = async (req, res) => {
       },
       accessToken: accessToken,
       webhook: plaidItem.webhook
-    }
+    };
     // If item with same institution already exists, replace it
     mongoDBConnection.get().collection('LanternUsers').find({ 'auth.email': req.user.email }).toArray((e, docs) => {
       let replaceItem = false;

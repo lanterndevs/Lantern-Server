@@ -14,7 +14,7 @@ module.exports.getTransactions = async (req, res) => {
   const transactions = [];
   let startDate;
   let endDate;
-  let reqOptions = {};
+  const reqOptions = {};
   const today = new Date();
   // If start date specified
   if (req.query.start_date != null) {
@@ -59,7 +59,7 @@ module.exports.getTransactions = async (req, res) => {
           };
           const paginatedResponse = await plaid.client.transactionsGet(paginatedRequest);
           plaidTransactions = plaidTransactions.concat(
-              paginatedResponse.data.transactions
+            paginatedResponse.data.transactions
           );
         }
       }
