@@ -46,14 +46,13 @@ module.exports.getTransactions = async (req, res) => {
       const response = await plaid.client.transactionsGet(transactionsRequest);
       let plaidTransactions = response.data.transactions;
       const totalTransactions = response.data.total_transactions;
-      console.log(totalTransactions);
       // If offset not specified by request, continue to paginate
       if (req.query.offset == null) {
         while (plaidTransactions.length < totalTransactions) {
           const paginatedRequest = {
             access_token: req.user.items[i].accessToken,
-            start_date: startString,
-            end_date: todayString,
+            start_date: startDate,
+            end_date: endDate,
             options: {
               offset: plaidTransactions.length
             }

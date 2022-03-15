@@ -1,4 +1,4 @@
-const { chai, server } = require('./testConfig');
+const { chai, server, delay } = require('./testConfig');
 const plaid = require('../plaidConnection');
 const mongo = require('../mongoDBConnection');
 
@@ -139,4 +139,11 @@ describe('/POST /api/link', () => {
       done();
     });
   });
+
+  it('WAIT: It should wait 8 seconds to make sure accounts feature can be fully initialized for this account', (done => {
+    // Wait 8 seconds
+    delay(8000).then(() => {
+      done()
+    });
+  })).timeout(9000);
 });
