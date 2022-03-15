@@ -124,7 +124,7 @@ paths:
           type: string
         in: query
       - name: offset
-        description: Page of transactions to fetch
+        description: Offset of transactions to fetch
         schema:
           type: integer
         in: query
@@ -134,9 +134,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Transaction'
+                $ref: '#/components/schemas/TransactionsResponse'
           description: Successful response - returns an array of `Transaction` entities.
         "401":
           description: ClientAuthToken not provided
@@ -158,8 +156,8 @@ paths:
       - clientToken: []
       operationId: getTransactions
       summary: GET /api/transactions
-      description: Gets a list of all `Transaction` entities for user owning provided
-        token
+      description: "Gets a list of all `Transaction` entities for user owning provided\
+        \ token, as well as the number of total transactions to be fetched for query."
   /api/users/authenticate:
     summary: To authenticate (login) User client
     post:
@@ -486,6 +484,22 @@ components:
             description: Object insertion ID from MongoDB
             type: string
       - $ref: '#/components/schemas/ClientAuthToken'
+    TransactionsResponse:
+      description: Format of a response to a transactions request
+      required:
+      - transactions
+      - total_transactions
+      type: object
+      properties:
+        transactions:
+          description: Array of transactions
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        total_transactions:
+          description: Count of total transactions in specified date range (or last
+            two years if no range specified)
+          type: integer
   securitySchemes:
     clientToken:
       type: apiKey

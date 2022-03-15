@@ -35,6 +35,8 @@ module.exports.getTransactions = async (req, res) => {
     reqOptions.offset = 0;
   }
 
+  let returnedTotalTransactions = 0;
+
   for (let i = 0; i < req.user.items.length; i++) {
     const transactionsRequest = {
       access_token: req.user.items[i].accessToken,
@@ -46,6 +48,7 @@ module.exports.getTransactions = async (req, res) => {
       const response = await plaid.client.transactionsGet(transactionsRequest);
       let plaidTransactions = response.data.transactions;
       const totalTransactions = response.data.total_transactions;
+      returnedTotalTransactions += totalTransactions;
       // If offset not specified by request, continue to paginate
       if (req.query.offset == null) {
         while (plaidTransactions.length < totalTransactions) {
@@ -82,5 +85,8 @@ module.exports.getTransactions = async (req, res) => {
   }
 
   // Return transactions
-  res.status(200).json(transactions);
+  res.status(200).json({
+    transactions: transactions,
+    total_transactions: returnedTotalTransactions
+  });
 };

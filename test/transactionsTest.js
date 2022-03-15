@@ -18,7 +18,7 @@ describe('/GET /api/transactions', () => {
           console.log(err2);
         }
         res2.should.have.status(200);
-        res2.body.should.have.lengthOf.above(0);
+        res2.body.transactions.should.have.lengthOf.above(0);
         done();
       });
     });
@@ -45,7 +45,7 @@ describe('/GET /api/transactions', () => {
             console.log(err2);
           }
           res2.should.have.status(200);
-          res2.body.should.have.lengthOf.above(0);
+          res2.body.transactions.should.have.lengthOf.above(0);
           done();
         });
     });
