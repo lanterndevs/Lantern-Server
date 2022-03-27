@@ -82,7 +82,6 @@ describe('/POST /api/link', () => {
           console.log(err2);
         }
         res2.should.have.status(200);
-        res2.body.should.have.property('token');
         done();
       });
     });
@@ -105,11 +104,9 @@ describe('/POST /api/link', () => {
           console.log(err2);
         }
         res2.should.have.status(200);
-        res2.body.should.have.property('token');
         // Now ensure only one item in database for user
         mongo.get().collection('LanternUsers').find({ 'auth.email': loginPayload.email }).toArray((e, docs) => {
           docs[0].items.should.have.length(1);
-          docs[0].items[0].accessToken.should.equal(res2.body.token);
           done();
         });
       });

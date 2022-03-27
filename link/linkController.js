@@ -1,5 +1,6 @@
 const plaid = require('../plaidConnection');
 const mongoDBConnection = require('../mongoDBConnection');
+const { encryptString } = require('../helpers/aes');
 
 /*
 GET /create
@@ -39,8 +40,9 @@ module.exports.exchange = async (req, res) => {
   try {
     const response = await plaid.client.itemPublicTokenExchange(exchangeRequest);
     const accessToken = response.data.access_token;
-    // const itemId = response.data.item_id
-    // Store full item and accessTokens in database
+    // Encrypt access token
+    const encryptedTokenContent = await encryptString(accessToken);
+    // Store full item and encrypted accessToken in database
     const plaidItem = await plaid.getItem(accessToken);
     // Now get more institution details
     const institutionRequest = {
@@ -56,7 +58,8 @@ module.exports.exchange = async (req, res) => {
         id: plaidInstitution.institution_id,
         name: plaidInstitution.name
       },
-      accessToken: accessToken,
+      accessToken: encryptedTokenContent.encryptedHex,
+      accessTokenIV: encryptedTokenContent.iv,
       webhook: plaidItem.webhook
     };
     // If item with same institution already exists, replace it
@@ -72,7 +75,7 @@ module.exports.exchange = async (req, res) => {
               if (e) {
                 res.status(500).json({ message: 'Database insert Item Error!' });
               } else {
-                res.status(200).json({ token: accessToken });
+                res.status(200).end();
               }
             });
           }
@@ -84,7 +87,7 @@ module.exports.exchange = async (req, res) => {
           if (e) {
             res.status(500).json({ message: 'Database insert Item Error!' });
           } else {
-            res.status(200).json({ token: accessToken });
+            res.status(200).end();
           }
         });
       }
