@@ -1,6 +1,6 @@
 const plaid = require('../plaidConnection');
 const mongoDBConnection = require('../mongoDBConnection');
-const {encryptString, decryptContent} = require('../helpers/aes');
+const {encryptString} = require('../helpers/aes');
 
 /*
 GET /create
