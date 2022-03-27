@@ -17,30 +17,59 @@ function genRandIV () {
     return ivArray;
 }
 
+// CBC block size
+let BLOCK_SIZE = 16;
+
 // Takes an unencrypted string and returns an encryption object
-function encryptString (rawInput) {
-    let randIV = genRandIV();
-    let aesCBC = new aesjs.ModeOfOperation.cbc(keyArray, randIV);
-    let rawInputBytes = aesjs.utils.utf8.toBytes(rawInput);
-    // Add buffer to make sure rawInputBytes length is multiple of 16
-    let bufferedBytes = ;
-    rawInputBytes =
-    // Must encrypt 16 bytes at a time for CBC mode
-    for (let i = 0; i < Math.ceil(rawInputBytes.length / 16))
-    let encryptedBytes = aesCBC.encrypt(rawInputBytes);
-    let encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-    return {
-        encryptedHex: encryptedHex,
-        iv: randIV
-    }
+function encryptString (rawString) {
+    return new Promise((resolve) => {
+        // Initialize AES CBC
+        let randIV = genRandIV();
+        let aesCBC = new aesjs.ModeOfOperation.cbc(keyArray, randIV);
+
+        // Add buffer to make sure input string is multiple of BLOCK_SIZE bytes
+        let appendString = "";
+        for (let i = 0; i < (BLOCK_SIZE - (rawString.length % BLOCK_SIZE)); i++) {
+            appendString = appendString + " ";
+        }
+        let bufferedInput = rawString + appendString;
+
+        // Encrypt BLOCK_SIZE bytes at a time
+        let encryptedHex = "";
+        for (let i = 0; i < bufferedInput.length; i += BLOCK_SIZE) {
+            let byteBlock = aesjs.utils.utf8.toBytes(bufferedInput.substring(i, i + BLOCK_SIZE));
+            let encryptedBlock = aesCBC.encrypt(byteBlock);
+            let encryptedHexBlock = aesjs.utils.hex.fromBytes(encryptedBlock);
+            encryptedHex += encryptedHexBlock;
+        }
+
+        resolve({
+            encryptedHex: encryptedHex,
+            iv: randIV
+        });
+    });
 }
 
 // Takes an encryption object and returns a decrypted string
 function decryptContent (encryptedContent) {
-    let aesCBC = new aesjs.ModeOfOperation.cbc(keyArray, encryptedContent.iv);
-    let encryptedBytes = aesjs.utils.hex.toBytes(encryptedContent.encryptedHex);
-    let decryptedBytes = aesCBC.decrypt(encryptedBytes);
-    return aesjs.utils.utf8.fromBytes(decryptedBytes);
+    return new Promise((resolve) => {
+        // Initialize AES CBC
+        let aesCBC = new aesjs.ModeOfOperation.cbc(keyArray, encryptedContent.iv);
+
+        // Decrypt BLOCK_SIZE bytes at a time (2 * BLOCK_SIZE hex characters)
+        let decryptedString = "";
+        for (let i = 0; i < encryptedContent.encryptedHex.length; i += (2 * BLOCK_SIZE)) {
+            let byteBlock = aesjs.utils.hex.toBytes(encryptedContent.encryptedHex.substring(i, i + (2 * BLOCK_SIZE)));
+            let decryptedBytes = aesCBC.decrypt(byteBlock);
+            let decryptedBlock = aesjs.utils.utf8.fromBytes(decryptedBytes);
+            decryptedString += decryptedBlock;
+        }
+
+        // Remove buffer at end
+        decryptedString = decryptedString.trim();
+
+        resolve(decryptedString);
+    });
 }
 
 module.exports = {
