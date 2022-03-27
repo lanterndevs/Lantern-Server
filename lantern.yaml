@@ -83,10 +83,6 @@ paths:
         required: true
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlaidAccessToken'
           description: Exchange successful
         "401":
           description: No ClientAuthToken provided
@@ -104,7 +100,7 @@ paths:
       summary: POST /api/link
       description: "Calls /item/public_token/exchange.  This returns an access token\
         \ and item ID.  Complete the rest of the fields in an Item, store it in the\
-        \ database, then return a complete item."
+        \ database, then return a success code."
   /api/transactions:
     summary: Path used to request transactions
     description: ""
