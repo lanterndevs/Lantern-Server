@@ -31,7 +31,7 @@ describe('Check password hashing/verification', () => {
 
 // Test AES encryption
 describe('Check AES encryption', () => {
-  let strToEncrypt = "thisisastringofsomerandomlength.it can have spaces in the middle, but not the beginning or end!";
+  const strToEncrypt = 'thisisastringofsomerandomlength.it can have spaces in the middle, but not the beginning or end!';
   let contentToDecrypt = null;
   it('It should encrypt a string of any length', (done) => {
     encryptString(strToEncrypt).then((encryptedContent) => {
@@ -46,6 +46,6 @@ describe('Check AES encryption', () => {
     decryptContent(contentToDecrypt).then((decryptedStr) => {
       decryptedStr.should.equal(strToEncrypt);
       done();
-    })
+    });
   });
 });

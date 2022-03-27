@@ -1,6 +1,6 @@
 const plaid = require('../plaidConnection');
 const mongoDBConnection = require('../mongoDBConnection');
-const {encryptString} = require('../helpers/aes');
+const { encryptString } = require('../helpers/aes');
 
 /*
 GET /create
@@ -41,7 +41,7 @@ module.exports.exchange = async (req, res) => {
     const response = await plaid.client.itemPublicTokenExchange(exchangeRequest);
     const accessToken = response.data.access_token;
     // Encrypt access token
-    let encryptedTokenContent = await encryptString(accessToken);
+    const encryptedTokenContent = await encryptString(accessToken);
     // Store full item and encrypted accessToken in database
     const plaidItem = await plaid.getItem(accessToken);
     // Now get more institution details
