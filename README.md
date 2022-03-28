@@ -8,7 +8,7 @@ This repository contains code for the backend server of the project.
 
 ### Quickstart Instructions
 
-To install and start the server for personal use, first ensure you have the latest version of the node package manager [npm](https://www.npmjs.com/).  Then, run the following command in the root of the repository:
+To install and start the server for personal use, first ensure you have the latest LTS version of [node](https://nodejs.org/en/) and the node package manager [npm](https://www.npmjs.com/).  Then, run the following command in the root of the repository:
 
 ```
 npm install
