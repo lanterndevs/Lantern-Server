@@ -14,7 +14,7 @@ To install and start the server for personal use, first ensure you have the late
 npm install
 ```
 
-This will install all dependencies for the project locally.  We will then need to create a .env file in the root of the repository to provide critical environment variables to the server.  To do this, make a copy of `.envexample` and rename it `.env`.  Replace the values with your own corresponding values and save your changes.
+This will install all dependencies for the project locally.  We will then need to create a .env file in the root of the repository to provide critical environment variables to the server.  To do this, make a copy of `.env.example` and rename it `.env`.  Replace the values with your own corresponding values and save your changes.
 
 To then start up a development server, run the following command in the root of the repository:
 
