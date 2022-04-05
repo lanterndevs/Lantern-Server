@@ -7,7 +7,7 @@
     "test": "mocha --require test/prepare test/allTests.js --exit"
   },
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "dependencies": {
     "body-parser": "^1.19.1",
     "cors": "^2.8.5",
