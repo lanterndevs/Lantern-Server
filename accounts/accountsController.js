@@ -31,10 +31,10 @@ module.exports.getAccounts = async (req, res) => {
     } catch (error) {
       // handle error
       console.log(error);
-      res.status(500).json({ message: error });
+      return res.status(500).json({ message: error });
     }
   }
 
   // Return accounts
-  res.status(200).json(accounts);
+  return res.status(200).json(accounts);
 };

@@ -24,11 +24,11 @@ module.exports.create = async (req, res) => {
   try {
     const response = await plaid.client.linkTokenCreate(request);
     const linkToken = response.data.link_token;
-    res.status(200).json({ token: linkToken });
+    return res.status(200).json({ token: linkToken });
   } catch (error) {
     // handle error
     console.log(error);
-    res.status(500).json({ message: error });
+    return res.status(500).json({ message: error });
   }
 };
 
@@ -73,9 +73,9 @@ module.exports.exchange = async (req, res) => {
             docs[0].items[i] = newItem;
             mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $set: { items: docs[0].items } }, (e, dbRes) => {
               if (e) {
-                res.status(500).json({ message: 'Database insert Item Error!' });
+                return res.status(500).json({ message: 'Database insert Item Error!' });
               } else {
-                res.status(200).end();
+                return res.status(200).end();
               }
             });
           }
@@ -85,9 +85,9 @@ module.exports.exchange = async (req, res) => {
       if (!replaceItem) {
         mongoDBConnection.get().collection('LanternUsers').updateOne({ 'auth.email': req.user.email }, { $push: { items: newItem } }, (e, dbRes) => {
           if (e) {
-            res.status(500).json({ message: 'Database insert Item Error!' });
+            return res.status(500).json({ message: 'Database insert Item Error!' });
           } else {
-            res.status(200).end();
+            return res.status(200).end();
           }
         });
       }
@@ -95,6 +95,6 @@ module.exports.exchange = async (req, res) => {
   } catch (error) {
     // handle error
     console.log(error);
-    res.status(500).json({ message: error });
+    return res.status(500).json({ message: error });
   }
 };

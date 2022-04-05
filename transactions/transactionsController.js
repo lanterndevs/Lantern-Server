@@ -80,12 +80,12 @@ module.exports.getTransactions = async (req, res) => {
     } catch (err) {
       // handle error
       console.log(err);
-      res.status(500).json({ message: err });
+      return res.status(500).json({ message: err });
     }
   }
 
   // Return transactions
-  res.status(200).json({
+  return res.status(200).json({
     transactions: transactions,
     total_transactions: returnedTotalTransactions
   });
