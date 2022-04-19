@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "nyc mocha --require test/prepare test/allTests.js --exit",
+    "test": "nyc mocha --require test/prepare test/allTests.js --exit && npm run perf-test",
     "perf-test": "nyc mocha test/performanceTest.js --exit --timeout 50000"
   },
   "author": "",
