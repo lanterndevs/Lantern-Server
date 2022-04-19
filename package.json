@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "nyc mocha --require test/prepare test/allTests.js --exit"
+    "test": "nyc mocha --require test/prepare test/allTests.js --exit",
+    "perf-test": "nyc mocha test/performanceTest.js --exit --timeout 50000"
   },
   "author": "",
   "license": "ISC",
@@ -32,6 +33,7 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
+    "loadtest": "^5.2.0",
     "mocha": "^9.2.0",
     "mocha-prepare": "^0.1.0",
     "mongodb-memory-server": "^8.2.0",
