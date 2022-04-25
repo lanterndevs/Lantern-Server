@@ -15,7 +15,7 @@ const transactionsRouter = require('./transactions/router');
 
 const server = Express();
 
-if (process.argv.length > 2 && process.argv[2] == 'perf-test') {
+if (process.argv.length > 2 && process.argv[2] === 'perf-test') {
   process.env.NODE_ENV = process.argv[2];
 }
 
@@ -27,7 +27,7 @@ const limiter = RateLimit({
 });
 
 // apply rate limiter to all requests
-if (process.env.NODE_ENV == 'dev') {
+if (process.env.NODE_ENV === 'dev') {
   server.use(limiter);
 }
 
@@ -50,8 +50,8 @@ server.use((err, req, res, next) => {
 });
 
 server.get('/', (req, res) => {
-    res.json({ message: 'Hello World' });
-    res.status(200);
+  res.json({ message: 'Hello World' });
+  res.status(200);
 });
 
 server.use('/api/', usersRouter);
@@ -59,9 +59,8 @@ server.use('/api/', linkRouter);
 server.use('/api/', accountsRouter);
 server.use('/api/', transactionsRouter);
 
-
 // Bypass connections if running tests
-if (process.env.NODE_ENV == 'dev') {
+if (process.env.NODE_ENV === 'dev') {
   mongoDBConnection.connect(() => {
     server.listen(port, async () => {
       try {
@@ -74,7 +73,7 @@ if (process.env.NODE_ENV == 'dev') {
   });
 }
 
-if (process.env.NODE_ENV == 'perf-test') {
+if (process.env.NODE_ENV === 'perf-test') {
   let mongodb;
   async function dbInit () {
     mongodb = await mms.create({ instance: { port: 27017, dbName: 'Lantern' } });
@@ -88,7 +87,5 @@ if (process.env.NODE_ENV == 'perf-test') {
     server.listen(port);
   });
 }
-
-
 
 module.exports = server;
