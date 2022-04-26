@@ -24,17 +24,17 @@ module.exports.getAccounts = async (req, res) => {
           balance: balance,
           description: (plaidAccounts[j].official_name !== null) ? plaidAccounts[j].official_name : '',
           id: plaidAccounts[j].account_id,
-          institutionID: req.user.items[i].institution_id,
+          institution: req.user.items[i].institution,
           name: plaidAccounts[j].name
         });
       }
     } catch (error) {
       // handle error
       console.log(error);
-      res.status(500).json({ message: error });
+      return res.status(500).json({ message: error });
     }
   }
 
   // Return accounts
-  res.status(200).json(accounts);
+  return res.status(200).json(accounts);
 };

@@ -83,10 +83,6 @@ paths:
         required: true
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlaidAccessToken'
           description: Exchange successful
         "401":
           description: No ClientAuthToken provided
@@ -104,19 +100,37 @@ paths:
       summary: POST /api/link
       description: "Calls /item/public_token/exchange.  This returns an access token\
         \ and item ID.  Complete the rest of the fields in an Item, store it in the\
-        \ database, then return a complete item."
+        \ database, then return a success code."
   /api/transactions:
     summary: Path used to request transactions
     description: ""
     get:
+      parameters:
+      - name: start_date
+        description: "Number of transactions to offset by, for pagination purposes"
+        schema:
+          format: date
+          type: string
+        in: query
+        required: false
+      - name: end_date
+        description: End date of transactions to fetch
+        schema:
+          format: date
+          type: string
+        in: query
+      - name: offset
+        description: Offset of transactions to fetch
+        schema:
+          type: integer
+        in: query
+        required: false
       responses:
         "200":
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Transaction'
+                $ref: '#/components/schemas/TransactionsResponse'
           description: Successful response - returns an array of `Transaction` entities.
         "401":
           description: ClientAuthToken not provided
@@ -138,8 +152,8 @@ paths:
       - clientToken: []
       operationId: getTransactions
       summary: GET /api/transactions
-      description: Gets a list of all `Transaction` entities for user owning provided
-        token
+      description: "Gets a list of all `Transaction` entities for user owning provided\
+        \ token, as well as the number of total transactions to be fetched for query."
   /api/users/authenticate:
     summary: To authenticate (login) User client
     post:
@@ -288,8 +302,7 @@ components:
           description: Date transaction occurred
           type: string
         amount:
-          description: Monetary amount ($USD) moved from source account to destination
-            account as a result of this transaction
+          description: Monetary amount of transaction (amount moved OUT of the account)
           type: number
         accountID:
           description: Plaid account ID of the account transaction is associated with
@@ -307,8 +320,8 @@ components:
       type: object
       properties:
         id:
+          $ref: '#/components/schemas/InstitutionID'
           description: Plaid-provided institution id
-          type: string
         name:
           description: Name of financial institution
           type: string
@@ -366,9 +379,9 @@ components:
       description: Financial account
       required:
       - name
-      - institutionID
       - id
       - balance
+      - institution
       type: object
       properties:
         name:
@@ -377,15 +390,15 @@ components:
         description:
           description: Description of account
           type: string
-        institutionID:
-          description: Plaid-provided institution ID account is associated with
-          type: string
         id:
           description: Unique Account ID (provided by Plaid)
           type: string
         balance:
           description: Current account balance
           type: number
+        institution:
+          $ref: '#/components/schemas/Institution'
+          description: Financial institution account belongs to
     Token:
       description: Generic token type
       required:
@@ -397,28 +410,23 @@ components:
           type: string
     PlaidItem:
       required:
-      - userID
       - id
       - institution
       - webhook
-      - token
+      - accessToken
       type: object
       properties:
-        userID:
-          description: ID of user Item belongs to
-          type: integer
         id:
           description: Unique Item ID (Assigned by Plaid)
           type: string
         institution:
-          description: Unique ID representing a financial institution (provided by
-            Plaid)
-          type: string
+          $ref: '#/components/schemas/Institution'
+          description: Financial institution
         webhook:
           description: URL registered to receive webhooks for the item (Provided by
             Plaid)
           type: string
-        token:
+        accessToken:
           $ref: '#/components/schemas/PlaidAccessToken'
           description: Plaid access token for Item
     Message:
@@ -472,6 +480,22 @@ components:
             description: Object insertion ID from MongoDB
             type: string
       - $ref: '#/components/schemas/ClientAuthToken'
+    TransactionsResponse:
+      description: Format of a response to a transactions request
+      required:
+      - transactions
+      - total_transactions
+      type: object
+      properties:
+        transactions:
+          description: Array of transactions
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        total_transactions:
+          description: Count of total transactions in specified date range (or last
+            two years if no range specified)
+          type: integer
   securitySchemes:
     clientToken:
       type: apiKey
