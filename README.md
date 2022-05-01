@@ -23,3 +23,7 @@ npm start
 ```
 
 This will spin up an express server instance in your local terminal.  Your local Lantern frontend should now be able to talk to the backend to enable full functionality!
+
+## API
+
+The API specification can be found [here](https://studio-ws.apicur.io/sharing/5fce221e-6f8e-4acf-9654-fae7a662dcb7)
